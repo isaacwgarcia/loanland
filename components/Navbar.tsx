@@ -25,7 +25,7 @@ export default function Navbar() {
         0xd0b95E27E9f789Bb2Eb7b2675Aa938a3a1A870Eb&nbsp;&nbsp;&nbsp;
         <Avatar
           alt="User"
-          src="https://picsum.photos/200/300"
+          src="https://picsum.photos/200/300?random=1"
           sx={{ width: 56, height: 56 }}
         />
       </Box>
