@@ -1,14 +1,25 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import Button from "@mui/material/Button";
 import styles from "../styles/Home.module.css";
+import { login } from "../components/lib/api";
+import { Session } from "../components/lib/types";
 
 export default function Home() {
+  async function handleLogin() {
+    //TODO - Auth Test
+    const session = (await login()) as Session;
+  }
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="LoanLand Powered by Superfluid" />
+        <title>LoanLand</title>
+        <meta
+          name="description"
+          content="LoanLand Powered by Superfluid and Lens."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -21,7 +32,13 @@ export default function Home() {
           {" "}
           <code className={styles.code}>
             {" "}
-            <Link href="/dashboard">Login </Link>
+            <Button
+              onClick={() => {
+                handleLogin();
+              }}
+            >
+              Login{" "}
+            </Button>
           </code>{" "}
         </p>
       </main>
