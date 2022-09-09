@@ -1,11 +1,15 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "@mui/material/Button";
+import { Button, Box } from "@mui/material";
 import styles from "../styles/Home.module.css";
 import { login } from "../components/lib/api";
 import { Session } from "../components/lib/types";
+import dynamic from "next/dynamic";
 
+const ReactPlayer = dynamic(() => import("react-player"), {
+  ssr: false,
+});
 export default function Home() {
   async function handleLogin() {
     //TODO - Auth Test
@@ -13,7 +17,7 @@ export default function Home() {
   }
 
   return (
-    <div className={styles.container}>
+    <>
       <Head>
         <title>LoanLand</title>
         <meta
@@ -22,39 +26,39 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a>LoanLand</a>
-        </h1>
-
-        <p className={styles.description}>
+      <Box sx={{ height: "100vh", background: "black", color: "white" }}>
+        <Box sx={{ position: "absolute", width: "100vw", height: "100vh" }}>
           {" "}
-          <code className={styles.code}>
-            {" "}
-            <Button
-              onClick={() => {
-                handleLogin();
-              }}
-            >
-              Login{" "}
-            </Button>
-          </code>{" "}
-        </p>
-      </main>
+          <ReactPlayer
+            url="https://www.loan-land.com/wp-content/uploads/2021/06/video_v2.mp4"
+            playing={true}
+            muted={true}
+            loop={true}
+            width="100vw"
+            height="100vh"
+            position="absolute"
+          />
+        </Box>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
+        <main className={styles.main}>
+          <h1 className={styles.title}>
+            Welcome to <a>LoanLand</a>
+          </h1>
+
+          <p className={styles.description}>
+            {" "}
+            <code className={styles.code}>
+              <Button
+                onClick={() => {
+                  handleLogin();
+                }}
+              >
+                Login{" "}
+              </Button>
+            </code>{" "}
+          </p>
+        </main>
+      </Box>
+    </>
   );
 }
