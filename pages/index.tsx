@@ -1,19 +1,30 @@
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { Button, Box } from "@mui/material";
+import ReactPlayer from "react-player";
 import styles from "../styles/Home.module.css";
-import { login } from "../components/lib/api";
-import { Session } from "../components/lib/types";
-import dynamic from "next/dynamic";
+import { loginAPI, getProfileAPI } from "../components/lib/api";
+import { Session, Profile } from "../components/lib/types";
+import { useContext } from "react";
+import { AppContext } from "../components/state/context";
+import { loadSession, loadProfile } from "../components/state/reducer";
+import { useRouter } from "next/router";
 
-const ReactPlayer = dynamic(() => import("react-player"), {
-  ssr: false,
-});
-export default function Home() {
+function Home() {
+  const router = useRouter();
+  const { dispatch } = useContext(AppContext);
+  const context = useContext(AppContext);
+
+  if (context.state.session.token.accessToken) {
+    router.push("/dashboard");
+  }
+
   async function handleLogin() {
-    //TODO - Auth Test
-    const session = (await login()) as Session;
+    const session = (await loginAPI()) as Session;
+    if (session) {
+      dispatch(loadSession(session));
+      const profile = await getProfileAPI(session.address);
+      dispatch(loadProfile(profile as Profile));
+    }
   }
 
   return (
@@ -62,3 +73,5 @@ export default function Home() {
     </>
   );
 }
+
+export default Home;

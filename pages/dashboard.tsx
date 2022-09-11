@@ -1,8 +1,11 @@
 import React from "react";
 import LoanCard from "../components/LoanCard";
 import Box from "@mui/material/Box";
+import { AppContext } from "../components/state/context";
 
+import { useContext } from "react";
 function Dashboard() {
+  const context = useContext(AppContext);
   return (
     <Box height="100vh">
       <Box
