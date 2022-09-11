@@ -1,4 +1,4 @@
-import { Session, Token } from "./types";
+import { Session, Profile } from "./types";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import Web3Modal from "web3modal";
 import { ethers } from "ethers";
@@ -8,7 +8,7 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export async function login(): Promise<Session | boolean> {
+export async function loginAPI(): Promise<Session | boolean> {
   try {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -54,10 +54,8 @@ export async function login(): Promise<Session | boolean> {
           console.error("Error fetching data: ", error);
         });
 
-      const token = authenticate as Token;
-      if (token) {
-        console.log("Lens_Token", token);
-      }
+      const session = authenticate as Session;
+      return session;
     } else {
       console.log("Please wait to connect...");
     }
@@ -105,9 +103,124 @@ export async function authenticate(address, signature) {
 
   const session: Session = {
     // @ts-ignore: Object is possibly 'null'.
-    jwt: accessTokens.data.authenticate.accessToken,
+    token: {
+      accessToken: accessTokens.data.authenticate.accessToken,
+      refreshToken: accessTokens.data.authenticate.refreshToken,
+    },
     // @ts-ignore: Object is possibly 'null'.
     address: String(address),
   };
   return session;
+}
+
+export async function getProfile(address) {
+  const PROFILE =
+    `
+  query Profiles {
+    profiles(request: { ownedBy: ["` +
+    address +
+    `"], limit: 10 }) {
+      items {
+        id
+        name
+        bio
+  
+        picture {
+          ... on NftImage {
+            contractAddress
+            tokenId
+            uri
+            verified
+          }
+          ... on MediaSet {
+            original {
+              url
+              mimeType
+            }
+          }
+          __typename
+        }
+        handle
+        coverPicture {
+          ... on NftImage {
+            contractAddress
+            tokenId
+            uri
+            verified
+          }
+          ... on MediaSet {
+            original {
+              url
+              mimeType
+            }
+          }
+          __typename
+        }
+        ownedBy
+        dispatcher {
+          address
+          canUseRelay
+        }
+        stats {
+          totalFollowers
+          totalFollowing
+          totalPosts
+          totalComments
+          totalMirrors
+          totalPublications
+          totalCollects
+        }
+        followModule {
+          ... on FeeFollowModuleSettings {
+            type
+            amount {
+              asset {
+                symbol
+                name
+                decimals
+                address
+              }
+              value
+            }
+            recipient
+          }
+          __typename
+        }
+      }
+      pageInfo {
+        prev
+        next
+        totalCount
+      }
+    }
+  }`;
+
+  const client = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+  });
+  const result = await client.query({
+    query: gql(PROFILE),
+  });
+  return result;
+}
+
+export async function getProfileAPI(address): Promise<Profile | boolean> {
+  const profile = await fetch(`/api/user/${address}`, {
+    method: `GET`,
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json().then((data) => {
+          return data.data.profiles?.items[0] as Profile;
+        });
+      }
+      throw new Error("Api is not available");
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
+  if (profile) {
+    return profile;
+  } else return false;
 }
