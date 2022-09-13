@@ -1,6 +1,5 @@
 import Head from "next/head";
-import { Button, Box } from "@mui/material";
-import ReactPlayer from "react-player";
+import { Box } from "@mui/material";
 import styles from "../styles/Home.module.css";
 import { loginAPI, getProfileAPI } from "../components/lib/api";
 import { Session, Profile } from "../components/lib/types";
@@ -8,15 +7,22 @@ import { useContext } from "react";
 import { AppContext } from "../components/state/context";
 import { loadSession, loadProfile } from "../components/state/reducer";
 import { useRouter } from "next/router";
+import { WidgetProps } from "@worldcoin/id";
+import dynamic from "next/dynamic";
 
 function Home() {
+  const WorldIDWidget = dynamic<WidgetProps>(
+    () => import("@worldcoin/id").then((mod) => mod.WorldIDWidget),
+    { ssr: false }
+  );
+  const ReactPlayer = dynamic(() => import("react-player"), {
+    ssr: false,
+  });
+
   const router = useRouter();
   const { dispatch } = useContext(AppContext);
   const context = useContext(AppContext);
-
-  if (context.state.session.token.accessToken) {
-    router.push("/dashboard");
-  }
+  const actionId = process.env.ACTION_ID; //TODO
 
   async function handleLogin() {
     const session = (await loginAPI()) as Session;
@@ -24,9 +30,30 @@ function Home() {
       dispatch(loadSession(session));
       const profile = await getProfileAPI(session.address);
       dispatch(loadProfile(profile as Profile));
+      if (context.state.session.token.accessToken) {
+        router.push("/dashboard");
+      }
     }
   }
 
+  async function verification(verificationResponse) {
+    const options = {
+      method: `POST`,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(verificationResponse),
+    };
+    const verification = await fetch(`api/ppp/verify`, options)
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        }
+        throw new Error("Api is not available");
+      })
+      .catch((error) => {
+        console.error("Error fetching data: ", error);
+      });
+    return verification.success;
+  }
   return (
     <>
       <Head>
@@ -50,25 +77,26 @@ function Home() {
             position="absolute"
           />
         </Box>
-
         <main className={styles.main}>
           <h1 className={styles.title}>
             Welcome to <a>LoanLand</a>
           </h1>
 
-          <p className={styles.description}>
-            {" "}
-            <code className={styles.code}>
-              <Button
-                onClick={() => {
-                  handleLogin();
-                }}
-              >
-                Login{" "}
-              </Button>
-            </code>{" "}
-          </p>
+          <WorldIDWidget
+            actionId="wid_staging_8d03e4abe36eb721fdb8eaea4f8589b5"
+            signal="loginUser"
+            enableTelemetry
+            onSuccess={(verificationResponse) => {
+              verification(verificationResponse).then((response) => {
+                if (response) handleLogin();
+              });
+            }}
+            onError={(error) => {
+              console.error("We couldn't verify your identity.", error);
+            }}
+          />
         </main>
+        ;
       </Box>
     </>
   );

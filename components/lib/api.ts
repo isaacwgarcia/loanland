@@ -224,3 +224,35 @@ export async function getProfileAPI(address): Promise<Profile | boolean> {
     return profile;
   } else return false;
 }
+
+export async function verifyID(verificationQuery) {
+  const proof = verificationQuery.proof;
+  const nullifier_hash = verificationQuery.nullifier_hash;
+  const merkle_root = verificationQuery.merkle_root;
+
+  const options = {
+    method: `POST`,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action_id: "wid_staging_8d03e4abe36eb721fdb8eaea4f8589b5",
+      signal: "loginUser",
+      proof: proof,
+      nullifier_hash: nullifier_hash,
+      merkle_root: merkle_root,
+    }),
+  };
+
+  const verify = await fetch(
+    `https://developer.worldcoin.org/api/v1/verify`,
+    options
+  )
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error("Api is not available");
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
+}

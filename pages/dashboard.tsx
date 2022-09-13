@@ -27,7 +27,7 @@ function Dashboard() {
         />
         <LoanCard
           interest="18%"
-          handle="samhill"
+          handle="johndoe"
           reputation="5.0"
           amount="1000$-5000$"
           days="60"

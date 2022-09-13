@@ -15,6 +15,7 @@
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
     "@types/node": "^18.7.16",
+    "@worldcoin/id": "^0.8.0",
     "ethers": "^5.7.0",
     "next": "12.2.5",
     "next-connect": "^0.13.0",
