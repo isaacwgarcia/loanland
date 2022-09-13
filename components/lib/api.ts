@@ -256,3 +256,11 @@ export async function verifyID(verificationQuery) {
       console.error("Error fetching data: ", error);
     });
 }
+
+export async function getWeb3Signer() {
+  const web3Modal = new Web3Modal();
+  const connection = await web3Modal.connect();
+  const provider = new ethers.providers.Web3Provider(connection);
+  const signer = provider.getSigner(); //Verifies signer
+  return signer;
+}

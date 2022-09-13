@@ -47,3 +47,7 @@ export interface Profile {
   picture: Picture;
   stats: Stats;
 }
+
+export interface FormData {
+  form_data: Record<string, string>;
+}

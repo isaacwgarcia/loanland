@@ -17,12 +17,15 @@
     "@types/node": "^18.7.16",
     "@worldcoin/id": "^0.8.0",
     "ethers": "^5.7.0",
+    "ipfs-http-client": "^58.0.0",
     "next": "12.2.5",
     "next-connect": "^0.13.0",
+    "omit-deep": "^0.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-player": "^2.10.1",
     "typescript": "^4.8.2",
+    "uuid": "^9.0.0",
     "web3modal": "^1.9.9"
   },
   "devDependencies": {

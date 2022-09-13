@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import styles from "../styles/Home.module.css";
 import { loginAPI, getProfileAPI } from "../components/lib/api";
 import { Session, Profile } from "../components/lib/types";
@@ -81,7 +81,13 @@ function Home() {
           <h1 className={styles.title}>
             Welcome to <a>LoanLand</a>
           </h1>
-
+          <Button
+            onClick={() => {
+              handleLogin();
+            }}
+          >
+            Login
+          </Button>
           <WorldIDWidget
             actionId="wid_staging_8d03e4abe36eb721fdb8eaea4f8589b5"
             signal="loginUser"
