@@ -264,3 +264,10 @@ export async function getWeb3Signer() {
   const signer = provider.getSigner(); //Verifies signer
   return signer;
 }
+
+export async function getWeb3Provider() {
+  const web3Modal = new Web3Modal();
+  const connection = await web3Modal.connect();
+  const provider = new ethers.providers.Web3Provider(connection);
+  return provider;
+}

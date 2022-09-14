@@ -3,15 +3,20 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { ethers, utils } from "ethers";
 import { v4 as uuidv4 } from "uuid";
 import { create as ipfsHttpClient } from "ipfs-http-client";
-import { getWeb3Signer } from "../../components/lib/api";
+import { getWeb3Signer, getWeb3Provider } from "../../components/lib/api";
 import { omit } from "./helpers";
-import { LENS_HUB_CONTRACT_ABI } from "./config";
+import {
+  LENS_HUB_CONTRACT_ABI,
+  LOAN_FACTORY_ABI,
+  LOAN_FACTORY_SECOND,
+} from "./config";
+import { Framework } from "@superfluid-finance/sdk-core";
 
 const splitSignature = (signature: string) => {
   return utils.splitSignature(signature);
 };
 
-export async function createLoan(accessToken, userId, description) {
+export async function createLoan(accessToken, userId, formState) {
   const CREATE_POST_TYPED_DATA = `
     mutation($request: CreatePublicPostRequest!) { 
         createPostTypedData(request: $request) {
@@ -68,10 +73,10 @@ export async function createLoan(accessToken, userId, description) {
     locale: "en",
     mainContentFocus: "TEXT_ONLY",
     content: JSON.stringify({
-      amount: 10000,
-      interest_rate: 10,
-      loan_term: 72,
-    }), // TODO Grab Loan's Conditions from UI.
+      amount: formState.amount,
+      interest_rate: formState.interest,
+      loan_term: formState.duration,
+    }),
     name: "LOAN_CONDITIONS",
     attributes: [],
     appId: "LoanLand",
@@ -136,8 +141,8 @@ export async function createLoan(accessToken, userId, description) {
       deadline: typedData.value.deadline,
     },
   });
-  console.log("created post: TX  >>> ", tx);
-  console.log("created post: tx hash", tx.hash);
+  //console.log("created post: TX  >>> ", tx);
+  //console.log("created post: tx hash", tx.hash);
   return tx;
 }
 
@@ -167,7 +172,66 @@ async function uploadJSON(item) {
     const url = `${dedicatedEndPoint}${added.path}`;
     return url;
   } catch (error) {
-    console.log("Error uploading file: ", error);
+    console.log("Error uploading to IPFS: ", error);
     return error;
   }
+}
+
+export async function preApply() {
+  const customHttpProvider = new ethers.providers.JsonRpcProvider(
+    process.env.MUMBAI_URL
+  );
+
+  const loanFactoryAddress = process.env.LOANFACTORY_ADDRESS;
+
+  const network = await customHttpProvider.getNetwork();
+  //console.log("Network ", network, "LoanFactoryAddress ", loanFactoryAddress);
+
+  const sf = await Framework.create({
+    chainId: network.chainId,
+    provider: customHttpProvider,
+  });
+  const provider = await getWeb3Provider();
+  const borrower = sf.createSigner({
+    web3Provider: provider,
+  });
+  /*
+  const employer = sf.createSigner({
+    privateKey: process.env.EMPLOYER_PRIVATE_KEY,
+    provider: customHttpProvider,
+  });
+
+ */
+  const maticx = await sf.loadSuperToken("MATICx"); //get MATICx on mumbai
+  const loanFactory = new ethers.Contract(
+    loanFactoryAddress,
+    LOAN_FACTORY_SECOND,
+    customHttpProvider
+  );
+
+  const borrower_address = borrower.getAddress();
+
+  await loanFactory
+    .connect(borrower)
+    .createNewLoan(
+      /////////////////////////////////TODO GRAB DETAILS FROM OFFER
+      "0x1D7b25dB3D1C868DE325C8CDF69DeC90c452e462",
+      ethers.utils.parseEther("10000"),
+      //BORROW amount = 1000 matic Amount to Borrow
+      10, // MOCK DATA 10% interest rate
+      36, // MOCK DATA 36 months payback period
+      "0xE7ab2D31396a89F91c4387ad88BBf94f590e8eB1", //address of employer who will be effectively whitelisted in this case GRAB THIS FROM UI
+      "0x1D7b25dB3D1C868DE325C8CDF69DeC90c452e462", //lender address
+      borrower_address, // address of borrower
+      maticx.address, //maticx address - this is the token we'll be using: borrowing in and paying back
+      sf.settings.config.hostAddress //address of host
+    )
+    .then((tx) => {
+      tx.wait(1).then(() => {
+        console.log("Instance successfull tx hash >>> ", tx.hash);
+        /* getLoans().then((data) => {
+          console.log("Data ", data);
+        }); */
+      });
+    });
 }

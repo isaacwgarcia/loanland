@@ -14,6 +14,8 @@
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
+    "@superfluid-finance/ethereum-contracts": "^1.4.0",
+    "@superfluid-finance/sdk-core": "^0.5.6",
     "@types/node": "^18.7.16",
     "@worldcoin/id": "^0.8.0",
     "ethers": "^5.7.0",
