@@ -4,19 +4,20 @@ import { preApply } from "../../components/lib/loan";
 import { useContext } from "react";
 import { AppContext } from "../../components/state/context";
 import React from "react";
+import { getDetails } from "../../components/lib/api";
 
 function LoanPage(props) {
   const context = useContext(AppContext);
   const data: FormData = { form_data: {} };
   const [formState, setFormState] = React.useState(data.form_data);
-  const accessToken = context.state.session.token.accessToken;
-  //console.log("Loan Page ", context.state);
 
+  let content = JSON.parse(props.loan.metadata.content);
   return (
     <>
       Apply for a Loan - You can not exceed these conditions.
       <br /> <br />
-      Amount: 10000&nbsp; InterestRate: 10%&nbsp; LoanTerm: 72.
+      Amount: {content.amount}&nbsp; InterestRate: {content.interest_rate}
+      %&nbsp; LoanTerm: {content.loan_term}.
       <Box my={2}>
         <TextField
           label="Employer Address"
@@ -63,11 +64,14 @@ function LoanPage(props) {
 }
 
 export const getServerSideProps = async (context) => {
-  //TODO Retrieve LOAN DETAILS
+  const loan_details = await getDetails(context.params.id);
   return {
-    props: {},
+    props: {
+      loan: loan_details,
+    },
   };
 };
 
 LoanPage.layout = true;
+
 export default LoanPage;

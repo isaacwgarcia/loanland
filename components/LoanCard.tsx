@@ -13,9 +13,8 @@ export default function LoanCard({
   amount,
   days,
   collateral,
-  id,
+  picture,
 }) {
-  let url = "https://picsum.photos/200/300?random=" + id;
   return (
     <Card
       sx={{
@@ -34,7 +33,7 @@ export default function LoanCard({
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         {" "}
-        <Avatar alt="User" src={url} sx={{ width: 150, height: 150 }} />
+        <Avatar alt="User" src={picture} sx={{ width: 150, height: 150 }} />
       </Box>
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
@@ -44,8 +43,8 @@ export default function LoanCard({
           Reputation&nbsp;<b>{reputation}</b>
           <StarIcon />
           <br />
-          Amount: <b>{amount}</b>
-          <br /> Term: <b>{days}mo</b>
+          Amount: <b>{amount} DAI</b>
+          <br /> Term: <b>{days} months</b>
           <br />
         </Typography>
       </CardContent>

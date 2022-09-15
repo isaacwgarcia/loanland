@@ -271,3 +271,103 @@ export async function getWeb3Provider() {
   const provider = new ethers.providers.Web3Provider(connection);
   return provider;
 }
+
+export async function getLoans() {
+  const GET_LOANS = `
+  query MyQuery {
+    explorePublications(
+      request: { sources: ["LoanLand"], sortCriteria: LATEST }
+    ) {
+      items {
+        ... on Post {
+          id
+          createdAt
+          metadata {
+            content
+          }
+          profile {
+            handle
+            ownedBy
+            picture {
+              ... on MediaSet {
+                original {
+                  url
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  `;
+  const result = await apolloClient.query({
+    query: gql(GET_LOANS),
+  });
+  return result.data.explorePublications.items;
+}
+
+export async function getDetails(id) {
+  const GET_DETAILS =
+    `query Publication {
+    publication(request: { publicationId: "` +
+    id +
+    `" }) {
+      ... on Post {
+        ...PostFields
+      }
+    }
+  }
+  
+  fragment MediaFields on Media {
+    url
+    mimeType
+  }
+  
+  fragment ProfileFields on Profile {
+    id
+  
+    handle
+    picture {
+      ... on NftImage {
+        contractAddress
+        tokenId
+        uri
+        verified
+      }
+      ... on MediaSet {
+        original {
+          ...MediaFields
+        }
+      }
+    }
+  
+    ownedBy
+  }
+  
+  fragment MetadataOutputFields on MetadataOutput {
+    name
+  
+    content
+  }
+  
+  fragment PostFields on Post {
+    id
+    profile {
+      ...ProfileFields
+    }
+  
+    metadata {
+      ...MetadataOutputFields
+    }
+    createdAt
+  
+    appId
+  }
+  `;
+  const result = await apolloClient.query({
+    query: gql(GET_DETAILS),
+  });
+  return result.data.publication;
+}

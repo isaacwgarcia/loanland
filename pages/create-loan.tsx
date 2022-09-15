@@ -14,7 +14,7 @@ function CreateLoan() {
 
   async function handleLoan(accessToken, userId, formState) {
     const response = await createLoan(accessToken, userId, formState);
-    console.log("Final Response from Loan", response);
+    //console.log("Final Response from Loan", response);
   }
   return (
     <Box height="100vh">
@@ -53,7 +53,7 @@ function CreateLoan() {
       </Box>
       <Button
         onClick={() => {
-          console.log("Creating Loan with", formState);
+          //console.log("Creating Loan with", formState);
           handleLoan(accessToken, userId, formState);
         }}
       >
