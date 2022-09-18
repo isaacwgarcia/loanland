@@ -182,7 +182,9 @@ export async function preApply() {
     process.env.MUMBAI_URL
   );
 
-  const loanFactoryAddress = process.env.LOANFACTORY_ADDRESS;
+  const loanFactoryAddress = process.env.LOANFACTORY_DEPLOYED_ADDRESS;
+
+  console.log("loanFactoryAddress ", loanFactoryAddress);
 
   const network = await customHttpProvider.getNetwork();
   //console.log("Network ", network, "LoanFactoryAddress ", loanFactoryAddress);
@@ -203,11 +205,14 @@ export async function preApply() {
 
  */
   const maticx = await sf.loadSuperToken("MATICx"); //get MATICx on mumbai
+
+  //////////////////////////////CREATING NEW LOAN////////////////////////////
   const loanFactory = new ethers.Contract(
     loanFactoryAddress,
     LOAN_FACTORY_SECOND,
     customHttpProvider
   );
+  //////////////////////////////CREATING NEW LOAN////////////////////////////
 
   const borrower_address = borrower.getAddress();
 
