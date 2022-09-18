@@ -276,7 +276,7 @@ export async function getLoans() {
   const GET_LOANS = `
   query MyQuery {
     explorePublications(
-      request: { sources: ["LoanLand"], sortCriteria: LATEST }
+      request: { sources: ["LoanLand"], sortCriteria: LATEST, publicationTypes:[POST] }
     ) {
       items {
         ... on Post {
@@ -297,6 +297,7 @@ export async function getLoans() {
             }
           }
         }
+     
       }
     }
   }
@@ -305,6 +306,7 @@ export async function getLoans() {
   const result = await apolloClient.query({
     query: gql(GET_LOANS),
   });
+
   return result.data.explorePublications.items;
 }
 
