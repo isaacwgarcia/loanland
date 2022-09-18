@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: MIT
+ 
+pragma solidity >=0.8.0;
+import {EmploymentLoan} from "./EmploymentLoanwGelato.sol"; 
+import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol";
+import {ISuperfluid} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import {EmploymentLoan} from "./EmploymentLoanwGelato.sol"; 
+
+contract LoanContract {
+
+    mapping(uint256 => EmploymentLoan) private idToLoan;
+    mapping(address => uint256) private employmentLoanOwners;
+    uint256 private loanId;
+    
+    function setIdtoLoan(EmploymentLoan loan) private  {
+        loanId++;
+        idToLoan[loanId]=loan;
+    } 
+
+    function setLoanOwner(address sender) private  {
+            employmentLoanOwners[sender] = loanId;
+        } 
+
+    function getLastID() public view returns (uint256) {
+        return loanId;
+    } 
+    function createLoan (int256 _borrowAmount,
+        int256 _interestRate,
+        int256 _paybackMonths,
+        address _employer,
+        address _lender,
+        address _borrower,
+        address payable _ops,
+        address _treasury,  
+        ISuperToken _borrowToken,
+        ISuperfluid _host) external returns (uint256){
+
+          EmploymentLoan newLoan = new EmploymentLoan(
+            _borrowAmount,
+            _interestRate,
+            _paybackMonths,
+            _employer,
+            _lender,
+            _borrower,
+            _borrowToken,
+            _host,
+            _ops,
+             _treasury  
+        );
+        loanId++;
+        setIdtoLoan(newLoan);
+        setLoanOwner(_borrower);
+        return loanId;
+
+    }
+
+}
+ 
