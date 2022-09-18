@@ -1,0 +1,134 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import {OpsReady} from "./gelato/OpsReady.sol";
+import {IOps} from "./gelato/IOps.sol";
+import {ITaskTreasury} from "./gelato/ITaskTreasury.sol";
+
+contract GelatoAutoTask is Ownable, OpsReady {
+
+    uint256 lastExecuted;
+    uint256 private count;
+
+    bool fundContractFlag = false;
+    bool createStreamFlag = false;
+    bool stopStreamFlag = false;
+    mapping(address => bytes32) public taskIdByUser;
+ 
+    constructor(
+      
+        address payable _ops,
+        address _treasury
+    )  OpsReady(_ops, payable(_treasury)){
+
+        lastExecuted = block.timestamp;
+    }
+
+    function fundGelato(uint256 amount) public payable {
+        require(msg.value == amount, "NO_FUNDING");
+        ITaskTreasury(treasury).depositFunds{value: amount}(
+            address(this),
+            ETH,
+            amount
+        );
+        fundContractFlag = true;
+    }
+
+     function createStopStreamTask(                      //CREATE TASK AGAINST GELATO NETWORK
+        uint256 _paybackMonths, //uint256 duration, 
+        address sender,
+        address to
+    ) internal {
+        bytes32 taskId = IOps(ops).createTimedTask(
+            uint128(block.timestamp + (((_paybackMonths*30)*24)*86400)), //// timestamp at which the task should be first  executed (stream should stop)
+            600, /// Interval between executions, we will cancel after the first
+            address(this), /// Contract executing the task
+            this.stopStream.selector,  /// Executable function's selector
+            address(this), /// Resolver contract, in our case will be the same
+            abi.encodeWithSelector(this.checkerStopStream.selector, sender, to),/// Checker Condition
+            ETH, ///  feetoken
+            true /// we will use the treasury contract for funding
+        );
+        taskIdByUser[sender] = taskId;
+        createStreamFlag = true;
+    }
+                
+    function checkerStopStream(address sender, address receiver)             
+        external
+        pure
+        returns (bool canExec, bytes memory execPayload)
+    {
+        canExec = true;
+
+        execPayload = abi.encodeWithSelector(
+            this.stopStream.selector,
+            address(sender),
+            address(receiver)
+        );
+    }
+
+
+   /*  Function: stopStream()
+     *          - Outcoming stream from loan contract to lender
+     *          - Incoming stream from employer to loan contract
+     *          - Delete the task only executed once */
+
+    function stopStream(address sender, address receiver) external onlyOps {
+    
+
+        /////// Get the OutflowRate
+        (, int96 outFlowRate, , ) = cfa.getFlow(
+            borrowToken,
+            address(this),
+            receiver
+        );
+
+
+        ////////// Check if outFlowRate exists 
+        if (outFlowRate > 0) {
+            host.callAgreement(
+                cfa,
+                abi.encodeWithSelector(
+                    cfa.deleteFlow.selector,
+                    borrowToken,
+                    address(this),
+                    receiver,
+                    new bytes(0) // placeholder
+                ),
+                "0x"
+            );
+        }
+
+        /////// Get the inFlowRate
+        (, int96 inFlowRate, , ) = cfa.getFlow(
+            borrowToken,
+            sender,
+            address(this)
+        );
+
+        ////////// Check if inFlowRate exists 
+
+        if (inFlowRate > 0) {
+            host.callAgreement(
+                cfa,
+                abi.encodeWithSelector(
+                    cfa.deleteFlow.selector,
+                    borrowToken,
+                    sender,
+                    address(this),
+                    new bytes(0) // placeholder
+                ),
+                "0x"
+            );
+        }
+        bytes32 _taskId = taskIdByUser[sender];
+        cancelTaskbyId(_taskId,sender);
+        stopStreamFlag = true;
+    }
+
+//// Cancel Task by Id
+    function cancelTaskbyId(bytes32 _taskId, address sender) public {
+        IOps(ops).cancelTask(_taskId);
+        taskIdByUser[sender] = bytes32(0);
+    }
+}

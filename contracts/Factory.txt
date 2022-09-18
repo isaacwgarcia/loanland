@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+//import {ISuperfluid, ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+
+// import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol";
+// import {ISuperfluid} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+// import {EmploymentLoan} from "./EmploymentLoanwGelato.sol"; 
+import  "./Loan.sol"; 
+ 
+contract Factory {
+
+    LoanContract loan = new LoanContract();
+    uint256 private loanId;
+    // mapping(uint256 => EmploymentLoan) private idToLoan;
+    //mapping(address => uint256) private employmentLoanOwners;
+    /// @notice Creates new loan contract.
+    /// @param _borrowAmount Amount to borrow.
+    /// @param _interestRate Interest rate.
+    /// @param _paybackMonths Number of months for repayment.
+    /// @param _employer Employer address.
+    /// @param _borrower Borrower address.
+    /// @param _borrowToken Token to borrow.
+    /// @param _host Superfluid host.
+    /// @return Loan ID.
+
+    
+    
+    function createNewLoan(
+        int256 _borrowAmount,
+        int256 _interestRate,
+        int256 _paybackMonths,
+        address _employer,
+        address _lender,
+        address _borrower,
+        address payable _ops,
+        address _treasury,  
+        ISuperToken _borrowToken,
+        ISuperfluid _host
+    ) external returns (uint256) {
+      /*   EmploymentLoan newLoan = new EmploymentLoan(
+            _borrowAmount,
+            _interestRate,
+            _paybackMonths,
+            _employer,
+            _lender,
+            _borrower,
+            _borrowToken,
+            _host,
+            _ops,
+             _treasury  
+        ); */
+
+        //loanId++;
+        //idToLoan[loanId] = newLoan;
+        // loan.setIdtoLoan(newLoan);
+        
+        //loan.setLoanOwner(msg.sender);
+       // employmentLoanOwners[msg.sender] = loanId;
+       loanId=loan.createLoan(_borrowAmount, _interestRate, _paybackMonths, _employer, _lender, _borrower, _ops, _treasury, _borrowToken, _host);
+       
+       return loanId;
+    }
+ 
+ /* 
+   function getLoanAddressByID(uint _id) external view returns (EmploymentLoan) {
+        return idToLoan[_id];
+    }
+
+    /// @notice Query loan address from owner.
+    /// @param _owner Employee.
+    /// @return Loan Address.
+    function getLoanByOwner(address _owner) public view returns (uint) {
+        return employmentLoanOwners[_owner];
+    }  */   
+
+ 
+}
+
+ 
