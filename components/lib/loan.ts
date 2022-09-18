@@ -177,7 +177,15 @@ async function uploadJSON(item) {
   }
 }
 
-export async function preApply() {
+export async function preApply(loan, formState) {
+  let content = JSON.parse(loan.metadata.content);
+  const lender = loan.profile.ownedBy;
+  const amount = content.amount;
+  const interest = content.interest_rate;
+  const loan_term = content.loan_term;
+  const employer = formState.employer_address;
+  //console.log("loan ", loan, "formState ", formState);
+
   const customHttpProvider = new ethers.providers.JsonRpcProvider(
     process.env.MUMBAI_URL
   );
@@ -185,7 +193,6 @@ export async function preApply() {
   const loanFactoryAddress = process.env.LOANFACTORY_ADDRESS;
 
   const network = await customHttpProvider.getNetwork();
-  //console.log("Network ", network, "LoanFactoryAddress ", loanFactoryAddress);
 
   const sf = await Framework.create({
     chainId: network.chainId,
@@ -195,17 +202,11 @@ export async function preApply() {
   const borrower = sf.createSigner({
     web3Provider: provider,
   });
-  /*
-  const employer = sf.createSigner({
-    privateKey: process.env.EMPLOYER_PRIVATE_KEY,
-    provider: customHttpProvider,
-  });
 
- */
   const maticx = await sf.loadSuperToken("MATICx"); //get MATICx on mumbai
   const loanFactory = new ethers.Contract(
     loanFactoryAddress,
-    LOAN_FACTORY_SECOND,
+    LOAN_FACTORY_ABI,
     customHttpProvider
   );
 
@@ -214,24 +215,17 @@ export async function preApply() {
   await loanFactory
     .connect(borrower)
     .createNewLoan(
-      /////////////////////////////////TODO GRAB DETAILS FROM OFFER
-      "0x1D7b25dB3D1C868DE325C8CDF69DeC90c452e462",
-      ethers.utils.parseEther("10000"),
+      ethers.utils.parseEther(amount),
       //BORROW amount = 1000 matic Amount to Borrow
-      10, // MOCK DATA 10% interest rate
-      36, // MOCK DATA 36 months payback period
-      "0xE7ab2D31396a89F91c4387ad88BBf94f590e8eB1", //address of employer who will be effectively whitelisted in this case GRAB THIS FROM UI
-      "0x1D7b25dB3D1C868DE325C8CDF69DeC90c452e462", //lender address
+      interest, // MOCK DATA 10% interest rate
+      loan_term, // MOCK DATA 36 months payback period
+      employer, //address of employer who will be effectively whitelisted in this case GRAB THIS FROM UI
+      lender, //lender address
       borrower_address, // address of borrower
       maticx.address, //maticx address - this is the token we'll be using: borrowing in and paying back
       sf.settings.config.hostAddress //address of host
     )
     .then((tx) => {
-      tx.wait(1).then(() => {
-        console.log("Instance successfull tx hash >>> ", tx.hash);
-        /* getLoans().then((data) => {
-          console.log("Data ", data);
-        }); */
-      });
+      console.log("Instance successfull tx hash >>> ", tx.hash);
     });
 }

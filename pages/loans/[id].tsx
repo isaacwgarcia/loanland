@@ -12,6 +12,10 @@ function LoanPage(props) {
   const [formState, setFormState] = React.useState(data.form_data);
 
   let content = JSON.parse(props.loan.metadata.content);
+  let loan = props.loan;
+  console.log("Loan ", loan);
+  console.log("Content of loan ", props.loan.metadata.content);
+
   return (
     <>
       Apply for a Loan - You can not exceed these conditions.
@@ -54,7 +58,7 @@ function LoanPage(props) {
       <Button
         onClick={() => {
           console.log("Applying with ", formState);
-          preApply();
+          preApply(loan, formState);
         }}
       >
         Pre - Application Process
