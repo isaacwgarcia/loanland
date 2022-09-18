@@ -13,8 +13,6 @@ function LoanPage(props) {
 
   let content = JSON.parse(props.loan.metadata.content);
   let loan = props.loan;
-  console.log("Loan ", loan);
-  console.log("Content of loan ", props.loan.metadata.content);
 
   return (
     <>
@@ -57,7 +55,6 @@ function LoanPage(props) {
       </Box>
       <Button
         onClick={() => {
-          console.log("Applying with ", formState);
           preApply(loan, formState);
         }}
       >

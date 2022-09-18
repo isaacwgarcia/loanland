@@ -5,11 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { getWeb3Signer, getWeb3Provider } from "../../components/lib/api";
 import { omit } from "./helpers";
-import {
-  LENS_HUB_CONTRACT_ABI,
-  LOAN_FACTORY_ABI,
-  LOAN_FACTORY_SECOND,
-} from "./config";
+import { LENS_HUB_CONTRACT_ABI, LOAN_FACTORY_ABI, LOAN_ABI } from "./config";
 import { Framework } from "@superfluid-finance/sdk-core";
 
 const splitSignature = (signature: string) => {
@@ -215,15 +211,14 @@ export async function preApply(loan, formState) {
   );
   //////////////////////////////CREATING NEW LOAN////////////////////////////
 
-  const borrower_address = borrower.getAddress();
+  const borrower_address = await borrower.getAddress();
 
   await loanFactory
     .connect(borrower)
     .createNewLoan(
-      ethers.utils.parseEther(amount),
-      //BORROW amount = 1000 matic Amount to Borrow
-      interest, // MOCK DATA 10% interest rate
-      loan_term, // MOCK DATA 36 months payback period
+      ethers.utils.parseEther(amount), //amount to Borrow
+      interest, //  interest rate
+      loan_term, //  months payback period
       employer, //address of employer who will be effectively whitelisted in this case GRAB THIS FROM UI
       lender, //lender address
       borrower_address, // address of borrower
@@ -233,4 +228,48 @@ export async function preApply(loan, formState) {
     .then((tx) => {
       console.log("Instance successfull tx hash >>> ", tx.hash);
     });
+}
+
+export async function getLoansbyLender(lender) {
+  const customHttpProvider = new ethers.providers.JsonRpcProvider(
+    process.env.MUMBAI_URL
+  );
+  const loanFactoryAddress = process.env.LOANFACTORY_DEPLOYED_ADDRESS;
+
+  const loanFactory = new ethers.Contract(
+    loanFactoryAddress,
+    LOAN_FACTORY_ABI,
+    customHttpProvider
+  );
+  let loans = [];
+  for (let i = 1; i < 10; i++) {
+    let contractAddress = await loanFactory.idToLoan(i);
+
+    if (contractAddress != "0x0000000000000000000000000000000000000000") {
+      const loan = new ethers.Contract(
+        contractAddress,
+        LOAN_ABI,
+        customHttpProvider
+      );
+      const _lender = await loan.lender();
+      if (lender == _lender) {
+        const _borrower = await loan.borrower();
+        const _amount = await loan.borrowAmount();
+        const _duration = await loan.paybackMonths();
+        const _interest = await loan.interestRate();
+
+        let conditions = {
+          borrower: _borrower,
+          amount: ethers.utils.formatEther(
+            ethers.BigNumber.from(_amount).toString()
+          ),
+          duration: ethers.BigNumber.from(_duration).toString(),
+          interest: _interest,
+        };
+
+        loans.push(conditions);
+      }
+    } else break;
+  }
+  return loans;
 }

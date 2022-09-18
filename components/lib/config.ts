@@ -2499,6 +2499,298 @@ export const LOAN_FACTORY_ABI = [
         type: "int8",
       },
       {
+        internalType: "int8",
+        name: "_paybackMonths",
+        type: "int8",
+      },
+      {
+        internalType: "address",
+        name: "_employer",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_lender",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_borrower",
+        type: "address",
+      },
+      {
+        internalType: "contract ISuperToken",
+        name: "_borrowToken",
+        type: "address",
+      },
+      {
+        internalType: "contract ISuperfluid",
+        name: "_host",
+        type: "address",
+      },
+    ],
+    name: "createNewLoan",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "employmentLoanOwners",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256",
+      },
+    ],
+    name: "getLoanAddressByID",
+    outputs: [
+      {
+        internalType: "contract EmploymentLoan",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+    ],
+    name: "getLoanByOwner",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "idToLoan",
+    outputs: [
+      {
+        internalType: "contract EmploymentLoan",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "loanId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
+/* export const LOAN_FACTORY_SECOND = [
+  {
+    inputs: [
+      {
+        internalType: "int256",
+        name: "_borrowAmount",
+        type: "int256",
+      },
+      {
+        internalType: "int8",
+        name: "_interestRate",
+        type: "int8",
+      },
+      {
+        internalType: "int8",
+        name: "_paybackMonths",
+        type: "int8",
+      },
+      {
+        internalType: "address",
+        name: "_employer",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_lender",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_borrower",
+        type: "address",
+      },
+      {
+        internalType: "contract ISuperToken",
+        name: "_borrowToken",
+        type: "address",
+      },
+      {
+        internalType: "contract ISuperfluid",
+        name: "_host",
+        type: "address",
+      },
+    ],
+    name: "createNewLoan",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "employmentLoanOwners",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256",
+      },
+    ],
+    name: "getLoanAddressByID",
+    outputs: [
+      {
+        internalType: "contract EmploymentLoan",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_owner",
+        type: "address",
+      },
+    ],
+    name: "getLoanByOwner",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "idToLoan",
+    outputs: [
+      {
+        internalType: "contract EmploymentLoan",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "loanId",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+]; */
+
+export const LOAN_ABI = [
+  {
+    inputs: [
+      {
+        internalType: "int256",
+        name: "_borrowAmount",
+        type: "int256",
+      },
+      {
+        internalType: "int8",
+        name: "_interestRate",
+        type: "int8",
+      },
+      {
         internalType: "int256",
         name: "_paybackMonths",
         type: "int256",
@@ -2990,152 +3282,6 @@ export const LOAN_FACTORY_ABI = [
         internalType: "int256",
         name: "",
         type: "int256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
-
-export const LOAN_FACTORY_SECOND = [
-  {
-    inputs: [
-      {
-        internalType: "int256",
-        name: "_borrowAmount",
-        type: "int256",
-      },
-      {
-        internalType: "int8",
-        name: "_interestRate",
-        type: "int8",
-      },
-      {
-        internalType: "int8",
-        name: "_paybackMonths",
-        type: "int8",
-      },
-      {
-        internalType: "address",
-        name: "_employer",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_lender",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_borrower",
-        type: "address",
-      },
-      {
-        internalType: "contract ISuperToken",
-        name: "_borrowToken",
-        type: "address",
-      },
-      {
-        internalType: "contract ISuperfluid",
-        name: "_host",
-        type: "address",
-      },
-    ],
-    name: "createNewLoan",
-    outputs: [
-      {
-        internalType: "uint8",
-        name: "",
-        type: "uint8",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "employmentLoanOwners",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_id",
-        type: "uint256",
-      },
-    ],
-    name: "getLoanAddressByID",
-    outputs: [
-      {
-        internalType: "contract EmploymentLoan",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_owner",
-        type: "address",
-      },
-    ],
-    name: "getLoanByOwner",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "idToLoan",
-    outputs: [
-      {
-        internalType: "contract EmploymentLoan",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "loanId",
-    outputs: [
-      {
-        internalType: "uint8",
-        name: "",
-        type: "uint8",
       },
     ],
     stateMutability: "view",

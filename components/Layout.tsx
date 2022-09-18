@@ -29,6 +29,22 @@ export default function Layout({ children }) {
               Create a Loan
             </b>
           </Button>
+          <Button
+            style={{
+              color: "#1AB227",
+              cursor: "pointer",
+              background: "#F0F9F0",
+              width: "100%",
+            }}
+            onClick={() => {
+              router.push("/approve-loan");
+            }}
+          >
+            <b>
+              <AttachMoneyIcon />
+              Approve Loan
+            </b>
+          </Button>
         </Grid>
 
         <Grid height="85vh" item xs={12} sm={12} md={9} lg={9} xl={9}>
