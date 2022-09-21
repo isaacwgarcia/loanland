@@ -5,7 +5,12 @@ import { v4 as uuidv4 } from "uuid";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { getWeb3Signer, getWeb3Provider } from "../../components/lib/api";
 import { omit } from "./helpers";
-import { LENS_HUB_CONTRACT_ABI, LOAN_FACTORY_ABI, LOAN_ABI } from "./config";
+import {
+  LENS_HUB_CONTRACT_ABI,
+  LOAN_FACTORY_ABI,
+  LOAN_ABI,
+  SCORING_ABI,
+} from "./config";
 import { Framework } from "@superfluid-finance/sdk-core";
 
 const splitSignature = (signature: string) => {
@@ -174,11 +179,13 @@ async function uploadJSON(item) {
 }
 
 export async function preApply(loan, formState) {
+  const scoringAddress = process.env.SCORING__DEPLOYED_ADDRESS;
+
   let content = JSON.parse(loan.metadata.content);
   const lender = loan.profile.ownedBy;
-  const amount = content.amount;
-  const interest = content.interest_rate;
-  const loan_term = content.loan_term;
+  const amount = formState.amount;
+  const interest = content.interest_rate; // You can't modify InterestRate
+  const loan_term = formState.months; // Should be less than stated in conditions.
   const employer = formState.employer_address;
   //console.log("loan ", loan, "formState ", formState);
 
@@ -187,8 +194,6 @@ export async function preApply(loan, formState) {
   );
 
   const loanFactoryAddress = process.env.LOANFACTORY_DEPLOYED_ADDRESS;
-
-  console.log("loanFactoryAddress ", loanFactoryAddress);
 
   const network = await customHttpProvider.getNetwork();
 
@@ -201,15 +206,13 @@ export async function preApply(loan, formState) {
     web3Provider: provider,
   });
 
-  const maticx = await sf.loadSuperToken("MATICx"); //get MATICx on mumbai
+  const daix = await sf.loadSuperToken("fDAIx"); //get DAIx on mumbai
 
-  //////////////////////////////CREATING NEW LOAN////////////////////////////
   const loanFactory = new ethers.Contract(
     loanFactoryAddress,
     LOAN_FACTORY_ABI,
     customHttpProvider
   );
-  //////////////////////////////CREATING NEW LOAN////////////////////////////
 
   const borrower_address = await borrower.getAddress();
 
@@ -222,8 +225,9 @@ export async function preApply(loan, formState) {
       employer, //address of employer who will be effectively whitelisted in this case GRAB THIS FROM UI
       lender, //lender address
       borrower_address, // address of borrower
-      maticx.address, //maticx address - this is the token we'll be using: borrowing in and paying back
-      sf.settings.config.hostAddress //address of host
+      daix.address, //daix address - this is the token we'll be using: borrowing in and paying back
+      sf.settings.config.hostAddress, //address of host
+      scoringAddress //Scoring Contract
     )
     .then((tx) => {
       console.log("Instance successfull tx hash >>> ", tx.hash);
@@ -234,6 +238,8 @@ export async function getLoansbyLender(lender) {
   const customHttpProvider = new ethers.providers.JsonRpcProvider(
     process.env.MUMBAI_URL
   );
+
+  //SET AFTER INITIAL DEPLOY
   const loanFactoryAddress = process.env.LOANFACTORY_DEPLOYED_ADDRESS;
 
   const loanFactory = new ethers.Contract(
@@ -241,6 +247,7 @@ export async function getLoansbyLender(lender) {
     LOAN_FACTORY_ABI,
     customHttpProvider
   );
+
   let loans = [];
   for (let i = 1; i < 10; i++) {
     let contractAddress = await loanFactory.idToLoan(i);
@@ -257,6 +264,7 @@ export async function getLoansbyLender(lender) {
         const _amount = await loan.borrowAmount();
         const _duration = await loan.paybackMonths();
         const _interest = await loan.interestRate();
+        const _loanaddress = await loan.address;
 
         let conditions = {
           borrower: _borrower,
@@ -265,6 +273,7 @@ export async function getLoansbyLender(lender) {
           ),
           duration: ethers.BigNumber.from(_duration).toString(),
           interest: _interest,
+          loanaddress: _loanaddress,
         };
 
         loans.push(conditions);
@@ -272,4 +281,87 @@ export async function getLoansbyLender(lender) {
     } else break;
   }
   return loans;
+}
+
+export async function approveLoan(loanAddress) {
+  const url = `${process.env.MUMBAI_URL}`;
+  const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+  const network = await customHttpProvider.getNetwork();
+  const sf = await Framework.create({
+    chainId: network.chainId,
+    provider: customHttpProvider,
+  });
+  const provider = await getWeb3Provider();
+  const lender = sf.createSigner({
+    web3Provider: provider,
+  });
+  const daix = await sf.loadSuperToken("fDAIx");
+  const employmentLoan = new ethers.Contract(loanAddress, LOAN_ABI, lender);
+  const borrowAmount = await employmentLoan.borrowAmount();
+  const amountDec = Number(
+    ethers.utils.formatEther(ethers.BigNumber.from(borrowAmount).toString())
+  );
+  const lender_address = await lender.getAddress();
+
+  const lenderBalance = await getBalance(lender_address);
+
+  console.log("Lender Balance: ", lenderBalance);
+  if (lenderBalance > amountDec) {
+    const lenderApprovalOperation = daix.approve({
+      receiver: employmentLoan.address,
+      amount: borrowAmount,
+    });
+
+    const result = await lenderApprovalOperation.exec(lender).then((tx) => {
+      console.log("Approval Operation: ", tx.hash);
+      return tx.hash;
+    });
+
+    if (result) {
+      console.log("Spending was approved now I can lend");
+
+      //CHECK THE LOAN IS FUNDED........
+      const loanBalance = await getBalance(employmentLoan.address);
+      console.log("LoanBalance is ", loanBalance);
+
+      //LEND THE MONEY BEFORE Make sure the loan has flow coming from the employer.
+      await employmentLoan
+        .connect(lender)
+        .lend()
+        .then((tx) => {
+          console.log(tx.hash);
+        })
+        .catch((e) => {
+          console.log("error lend", e);
+        });
+    }
+  } else {
+    console.log("Lender Insufficient funds.");
+  }
+}
+
+export async function getBalance(address) {
+  const url = `${process.env.MUMBAI_URL}`;
+  const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+  const network = await customHttpProvider.getNetwork();
+
+  const sf = await Framework.create({
+    chainId: network.chainId,
+    provider: customHttpProvider,
+  });
+
+  const provider = await getWeb3Provider();
+  const lender = sf.createSigner({
+    web3Provider: provider,
+  });
+  const daix = await sf.loadSuperToken("fDAIx");
+  const lenderBalance = await daix.balanceOf({
+    account: address,
+    providerOrSigner: lender,
+  });
+
+  const balance = Number(
+    ethers.utils.formatEther(ethers.BigNumber.from(lenderBalance))
+  );
+  return balance;
 }

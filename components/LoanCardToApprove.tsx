@@ -1,10 +1,17 @@
 import React from "react";
-import { Card, Button, Typography, Avatar, Box } from "@mui/material";
-import { CardContent } from "@mui/material";
+import {
+  Card,
+  Button,
+  Typography,
+  Avatar,
+  Box,
+  CardContent,
+} from "@mui/material";
 
 import StarIcon from "@mui/icons-material/Star";
-
+import { approveLoan } from "../components/lib/loan";
 export default function LoanCardToApprove({
+  address,
   interest,
   handle,
   reputation,
@@ -30,7 +37,6 @@ export default function LoanCardToApprove({
         APR&nbsp;<b>{interest}%</b>
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        {" "}
         <Avatar alt="User" src={picture} sx={{ width: 150, height: 150 }} />
       </Box>
       <CardContent>
@@ -45,8 +51,17 @@ export default function LoanCardToApprove({
           <br /> Term: <b>{days} months</b>
           <br />
         </Typography>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            sx={{ color: "red" }}
+            onClick={() => {
+              approveLoan(address);
+            }}
+          >
+            Approve
+          </Button>
+        </Box>
       </CardContent>
-      <Button>Approve</Button>
     </Card>
   );
 }

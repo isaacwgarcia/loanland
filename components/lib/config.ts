@@ -2528,6 +2528,11 @@ export const LOAN_FACTORY_ABI = [
         name: "_host",
         type: "address",
       },
+      {
+        internalType: "address",
+        name: "_scoring",
+        type: "address",
+      },
     ],
     name: "createNewLoan",
     outputs: [
@@ -2614,6 +2619,25 @@ export const LOAN_FACTORY_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "admin",
+        type: "address",
+      },
+    ],
+    name: "initScore",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "pure",
     type: "function",
   },
   {
@@ -2818,6 +2842,11 @@ export const LOAN_ABI = [
       {
         internalType: "contract ISuperfluid",
         name: "_host",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_scoringAddress",
         type: "address",
       },
     ],
@@ -3285,6 +3314,177 @@ export const LOAN_ABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+];
+
+export const SCORING_ABI = [
+  {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+    ],
+    name: "closeUnpaid",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAdmin",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "getOpenLoans",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "getPaidLoans",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "getScore",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "totalLoans",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalPaid",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "closedUnpaid",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct Scoring.Score",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "getUnpaid",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+    ],
+    name: "openLoan",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+    ],
+    name: "payLoan",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ];

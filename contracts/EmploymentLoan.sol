@@ -9,6 +9,8 @@ import {IConstantFlowAgreementV1} from "@superfluid-finance/ethereum-contracts/c
 
 import {SuperAppBase} from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
 
+import {Scoring} from "./Scoring.sol";              // Imports Scoring
+
 /// @title Employment Loan Contract
 /// @author Superfluid
 contract EmploymentLoan is SuperAppBase {
@@ -35,6 +37,10 @@ contract EmploymentLoan is SuperAppBase {
 
     /// @notice Address of employer - must be allow-listed for this example
     address public immutable employer;
+
+    /// @notice Address of ScoringContract
+    Scoring private immutable scoringContract;          //ScoringContract
+
 
     /// @notice Borrower address.
     address public immutable borrower;
@@ -93,8 +99,10 @@ contract EmploymentLoan is SuperAppBase {
         address _lender, // allow-listed lender address
         address _borrower, // borrower address
         ISuperToken _borrowToken, // super token to be used in borrowing
-        ISuperfluid _host // address of SF host
+        ISuperfluid _host, // address of SF host
+        address _scoringAddress // address of the scoringContract
     ) {
+        scoringContract = Scoring(_scoringAddress); //contractInstance
         borrowAmount = _borrowAmount;
         interestRate = _interestRate;
         paybackMonths = _paybackMonths;
@@ -112,6 +120,7 @@ contract EmploymentLoan is SuperAppBase {
 
 
         cfaV1 = CFAv1Library.InitData(_host, cfa);
+      
 
         // super app registration
         uint256 configWord = SuperAppDefinitions.APP_LEVEL_FINAL |
@@ -182,6 +191,8 @@ contract EmploymentLoan is SuperAppBase {
         cfaV1.createFlow(lender, borrowToken, getPaymentFlowRate());
 
         loanOpen = true;
+        scoringContract.openLoan(borrower);     //Add +1 openLoan to the Borrower
+
         //lender = msg.sender;                  MODIFIED TO SET THE LENDER AT THE BEGGINING           
         loanStartTime = block.timestamp;
     }
@@ -349,6 +360,8 @@ contract EmploymentLoan is SuperAppBase {
         (, int96 currentFlowRate, , ) = cfaV1.cfa.getFlow(borrowToken, address(this), borrower);
         cfaV1.updateFlow(borrower, borrowToken, currentFlowRate + currentLenderFlowRate);
         loanOpen = false;
+        scoringContract.payLoan(borrower);     //Add +1 totalPaid to the Borrower
+
     }
 
     ///@notice allows lender or borrower to close a loan that is not yet finished
@@ -373,6 +386,8 @@ contract EmploymentLoan is SuperAppBase {
 
             cfaV1.updateFlow(borrower, borrowToken, currentFlowRate + currentLenderFlowRate);
             loanOpen = false;
+            scoringContract.closeUnpaid(borrower);     //Add +1 totalPaid to the Borrower
+
         }
     }
 

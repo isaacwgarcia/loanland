@@ -27,6 +27,7 @@ function ApproveLoan() {
         return (
           <LoanCardToApprove
             key={index}
+            address={loan.loanaddress}
             interest={loan.interest}
             reputation="5.0"
             amount={loan.amount}
