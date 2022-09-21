@@ -34,7 +34,7 @@ export default function LoanCardToApprove({
         variant="h6"
         sx={{ display: "flex", justifyContent: "flex-end" }}
       >
-        APR&nbsp;<b>{interest}%</b>
+        Interest Rate&nbsp;<b>{interest}%</b>
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Avatar alt="User" src={picture} sx={{ width: 150, height: 150 }} />

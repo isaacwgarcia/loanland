@@ -12,6 +12,7 @@ function Dashboard(props) {
   let array: [] = props.loans;
 
   //console.log("context", context.state.session);
+  //console.log("props", props.loans);
   if (array.length == 0)
     return (
       <Box height="80vh">
@@ -53,7 +54,7 @@ function Dashboard(props) {
             >
               <LoanCard
                 key={index}
-                interest={content.interest}
+                interest={content.interest_rate}
                 handle={loan.profile.handle}
                 reputation="5.0"
                 amount={content.amount}

@@ -25,9 +25,9 @@ export default function Navbar() {
           alignItems: "center",
         }}
       >
-        {context.state.profile.ownedBy
-          ? context.state.profile.ownedBy
-          : "You don't own a Lens Profile"}
+        {context.state.profile.handle
+          ? context.state.profile.handle
+          : context.state.session.address}
         &nbsp;&nbsp;&nbsp;{" "}
         <Avatar
           alt="User"

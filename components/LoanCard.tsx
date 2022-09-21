@@ -29,7 +29,7 @@ export default function LoanCard({
         variant="h6"
         sx={{ display: "flex", justifyContent: "flex-end" }}
       >
-        APR&nbsp;<b>{interest}</b>
+        Interest Rate&nbsp;<b>{interest}%</b>
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         {" "}
