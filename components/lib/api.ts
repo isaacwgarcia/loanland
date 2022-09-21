@@ -739,7 +739,7 @@ export async function refreshUser(address) {
     user.bio = profile.data.profiles.items[0].bio;
     user.handle = profile.data.profiles.items[0].handle;
     user.id = profile.data.profiles.items[0].id;
-
+    user.ownedBy = profile.data.profiles.items[0].ownedBy;
     user.name = profile.data.profiles.items[0].name;
 
     if (profile.data.profiles.items[0].picture) {

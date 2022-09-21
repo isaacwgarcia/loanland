@@ -1,15 +1,18 @@
 import React, { useContext, useState } from "react";
 import { Box, Button } from "@mui/material";
-import { FormData } from "./lib/types";
+import { FormData, Profile } from "./lib/types";
 import { IPFS_CLIENT } from "./lib/ipfs";
 import { AppContext } from "./state/context";
 import { useRouter } from "next/router";
 import { updateProfileImage, burnProfile } from "./lib/api";
 import CircularProgress from "@mui/material/CircularProgress";
-import { getProfile } from "./lib/api";
+import { refreshUser } from "./lib/api";
+import { loadProfile } from "./state/reducer";
+
 import VerifiedIcon from "@mui/icons-material/Verified";
 
 export default function ProfileImageForm() {
+  const { dispatch } = useContext(AppContext);
   const data: FormData = { form_data: {} };
   const [formState, setFormState] = React.useState(data.form_data);
   const [loading, setLoading] = useState(false);
@@ -26,9 +29,10 @@ export default function ProfileImageForm() {
     );
 
     if (resultTx.length > 1) {
-      const profile = await getProfile(session?.state.session.address);
-
-      //TODO RELOAD USER AFTER UPLOAD
+      const user = await refreshUser(session.state.session.address);
+      dispatch(loadProfile(user as Profile));
+      setLoading(false);
+      setUploaded(true);
     }
   }
 
@@ -57,6 +61,31 @@ export default function ProfileImageForm() {
       session.state.profile.id
     );
   }
+
+  if (uploaded)
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        border="rounded"
+        height="80vh"
+        mt="10vh"
+        flexDirection="column"
+        justifyItems="center"
+        alignContent="center"
+        alignItems="center"
+      >
+        <VerifiedIcon />
+        Profile Photo Uploaded.
+        <Button
+          onClick={() => {
+            router.push("/dashboard");
+          }}
+        >
+          Dashboard
+        </Button>
+      </Box>
+    );
   return (
     <Box display="flex" flexDirection="column">
       <Box
