@@ -33,8 +33,6 @@ export default function ProfileForm() {
       setLoading(false);
       setComplete(true);
     }
-
-    //TODO PUSH TO DASHBOARD ON CONFIRMATION
   }
   return (
     <Box display="flex" justifyContent="center" border="rounded" height="80vh">
