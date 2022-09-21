@@ -37,7 +37,7 @@ export async function loginAPI(): Promise<Session | boolean> {
               return data;
             });
           }
-          throw new Error("Api is not available");
+          throw new Error("Api is not available challenge");
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);
@@ -57,7 +57,7 @@ export async function loginAPI(): Promise<Session | boolean> {
               return data;
             });
           }
-          throw new Error("Api is not available");
+          throw new Error("Api is not available authenticate");
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);
@@ -224,7 +224,7 @@ export async function getProfileAPI(address): Promise<Profile | boolean> {
           return data.data.profiles?.items[0] as Profile;
         });
       }
-      throw new Error("Api is not available");
+      throw new Error("Api is not available getProfileAPI");
     })
     .catch((error) => {
       console.error("Error fetching data: ", error);
@@ -259,7 +259,7 @@ export async function verifyID(verificationQuery) {
       if (response.ok) {
         return response.json();
       }
-      throw new Error("Api is not available");
+      throw new Error("Api is not available verifyID");
     })
     .catch((error) => {
       console.error("Error fetching data: ", error);

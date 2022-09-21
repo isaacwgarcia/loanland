@@ -47,7 +47,7 @@ function Home() {
         if (response.status == 200) {
           return response.json();
         }
-        throw new Error("Api is not available");
+        throw new Error("Api is not available ppp verification");
       })
       .catch((error) => {
         console.error("Error fetching data: ", error);

@@ -25,7 +25,9 @@ export default nc<NextApiRequest, NextApiResponse>().post(async (req, res) => {
           return res.json(data);
         });
       }
-      throw new Error("Api is not available");
+      throw new Error(
+        "Api is not available https://developer.worldcoin.org/api/v1/verify"
+      );
     })
     .catch((error) => {
       console.error("Error fetching data: ", error);
