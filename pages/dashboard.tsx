@@ -11,6 +11,7 @@ function Dashboard(props) {
   const context = useContext(AppContext);
   let array: [] = props.loans;
 
+  //console.log("context", context.state.session);
   if (array.length == 0)
     return (
       <Box height="80vh">

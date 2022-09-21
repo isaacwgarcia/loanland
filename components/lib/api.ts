@@ -749,3 +749,81 @@ export async function refreshUser(address) {
     return user;
   }
 }
+
+export async function burnProfile(jwt, userId) {
+  const CREATE_BURN_PROFILE_TYPED_DATA = `
+  mutation($request: BurnProfileRequest!) { 
+    createBurnProfileTypedData(request: $request) {
+      id
+      expiresAt
+      typedData {
+        domain {
+          name
+          chainId
+          version
+          verifyingContract
+        }
+        types {
+          BurnWithSig {
+            name
+            type
+          }
+        }
+        value {
+          nonce
+        	deadline
+        	tokenId
+        }
+      }
+    }
+ }
+`;
+
+  const client = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: jwt ? `Bearer ${jwt}` : "",
+    },
+  });
+
+  const createBurnProfileTypedData = await client.mutate({
+    mutation: gql(CREATE_BURN_PROFILE_TYPED_DATA),
+    variables: {
+      request: { profileId: userId },
+    },
+  });
+
+  console.log(
+    "create follow createFollowTypedData",
+    createBurnProfileTypedData
+  );
+
+  const typedData =
+    createBurnProfileTypedData.data.createBurnProfileTypedData.typedData;
+  console.log("create burn typed data", typedData);
+
+  const domain = omit(typedData.domain, "__typename");
+  const types = omit(typedData.types, "__typename");
+  const value = omit(typedData.value, "__typename");
+
+  const signer = await getWeb3Signer();
+
+  const signature = await signer._signTypedData(domain, types, value);
+  console.log("set burn profile: signature ", signature);
+
+  const { v, r, s } = splitSignature(signature);
+  const lensHub = new ethers.Contract(
+    process.env.LENS_HUB_CONTRACT,
+    LENS_HUB_CONTRACT_ABI,
+    signer
+  );
+  const tx = lensHub.burnWithSig(typedData.value.tokenId, {
+    v,
+    r,
+    s,
+    deadline: typedData.value.deadline,
+  });
+
+  console.log("Profile deleted.");
+}

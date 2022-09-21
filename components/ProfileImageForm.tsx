@@ -4,7 +4,7 @@ import { FormData } from "./lib/types";
 import { IPFS_CLIENT } from "./lib/ipfs";
 import { AppContext } from "./state/context";
 import { useRouter } from "next/router";
-import { updateProfileImage } from "./lib/api";
+import { updateProfileImage, burnProfile } from "./lib/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { getProfile } from "./lib/api";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -25,11 +25,10 @@ export default function ProfileImageForm() {
       formState.profile_picture
     );
 
-    console.log("updatePicture result TX ", resultTx);
     if (resultTx.length > 1) {
       const profile = await getProfile(session?.state.session.address);
 
-      console.log("Reload User >>"); //TODO RELOAD USER AFTER UPLOAD
+      //TODO RELOAD USER AFTER UPLOAD
     }
   }
 
@@ -50,6 +49,13 @@ export default function ProfileImageForm() {
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
+  }
+
+  async function handleBurn() {
+    const result = await burnProfile(
+      session.state.session.token.accessToken,
+      session.state.profile.id
+    );
   }
   return (
     <Box display="flex" flexDirection="column">
@@ -92,6 +98,15 @@ export default function ProfileImageForm() {
                 }}
               >
                 Update Image
+              </Button>{" "}
+              &nbsp;&nbsp;&nbsp;
+              <Button
+                color="error"
+                onClick={() => {
+                  handleBurn();
+                }}
+              >
+                Burn Profile{" "}
               </Button>
             </Box>
           </Box>
