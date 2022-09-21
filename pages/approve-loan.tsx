@@ -21,6 +21,24 @@ function ApproveLoan() {
     getLoans().catch(console.error);
   }, [loaded]);
 
+  //let array: [] = props.loans;
+
+  if (loans.length == 0)
+    return (
+      <Box height="100vh">
+        <Box
+          display="flex"
+          flexDirection="row"
+          width="100%"
+          justifyContent="space-around"
+          rowGap="10px"
+          flexWrap="wrap"
+        >
+          No Loans to approve.
+        </Box>{" "}
+      </Box>
+    );
+
   return (
     <Box height="100vh">
       {loans?.map((loan, index) => {

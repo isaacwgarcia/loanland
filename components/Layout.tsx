@@ -6,23 +6,56 @@ import { useRouter } from "next/router";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import CheckIcon from "@mui/icons-material/Check";
+import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
+import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 export default function Layout({ children }) {
   const router = useRouter();
 
   return (
     <>
       <Navbar />
-      <Grid container spacing={3} width="auto" padding="1vw">
-        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+      <Grid container spacing={3} width="auto">
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={3}
+          lg={3}
+          xl={3}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-around",
+            height: "90vh",
+          }}
+        >
           <Button
             style={{
               color: "#1AB227",
               cursor: "pointer",
               background: "#F0F9F0",
-              width: "100%",
+              width: "50%",
             }}
             onClick={() => {
-              router.push("/create-loan");
+              //router.push("/create-profile"); //TODO
+            }}
+          >
+            <b>
+              <NoteAddIcon />
+              Create Profile
+            </b>
+          </Button>
+          <Button
+            style={{
+              color: "#1AB227",
+              cursor: "pointer",
+              background: "#F0F9F0",
+              width: "50%",
+            }}
+            onClick={() => {
+              router.push("/profiles/123"); //TODO GRAB PROFILEID FROM STATE
             }}
           >
             <b>
@@ -35,7 +68,7 @@ export default function Layout({ children }) {
               color: "#1AB227",
               cursor: "pointer",
               background: "#F0F9F0",
-              width: "100%",
+              width: "50%",
             }}
             onClick={() => {
               router.push("/create-loan");
@@ -51,7 +84,7 @@ export default function Layout({ children }) {
               color: "#1AB227",
               cursor: "pointer",
               background: "#F0F9F0",
-              width: "100%",
+              width: "50%",
             }}
             onClick={() => {
               router.push("/approve-loan");
@@ -67,15 +100,31 @@ export default function Layout({ children }) {
               color: "#1AB227",
               cursor: "pointer",
               background: "#F0F9F0",
-              width: "100%",
+              width: "50%",
             }}
             onClick={() => {
               router.push("/pay-advance");
             }}
           >
             <b>
-              <CheckIcon />
+              <CloseFullscreenIcon />
               Pay in advance
+            </b>
+          </Button>
+          <Button
+            style={{
+              color: "#1AB227",
+              cursor: "pointer",
+              background: "#F0F9F0",
+              width: "50%",
+            }}
+            onClick={() => {
+              router.push("/history");
+            }}
+          >
+            <b>
+              <ManageHistoryIcon />
+              Your History
             </b>
           </Button>
         </Grid>

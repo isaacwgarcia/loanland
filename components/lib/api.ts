@@ -373,3 +373,7 @@ export async function getDetails(id) {
   });
   return result.data.publication;
 }
+
+export async function getProfileDetails(profileId) {
+  return profileId;
+}

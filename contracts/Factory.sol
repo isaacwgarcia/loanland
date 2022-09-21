@@ -10,7 +10,7 @@ contract Factory {
     /// @dev Note that the value begins at 0 here, but the first one will start at one.
     uint256 private loanId;             //Private reduces size of contract
     /// @notice mapping of loanId to the loan contract
-    mapping(uint256 => EmploymentLoan) private idToLoan;   //Private reduces size of contract
+    mapping(uint256 => EmploymentLoan) public idToLoan;   
 
     /// @notice mapping of loan owner (i.e. the msg.sender on the call) to the loan Id
     mapping(address => uint256) public employmentLoanOwners;
