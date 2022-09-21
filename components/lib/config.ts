@@ -2655,58 +2655,160 @@ export const LOAN_FACTORY_ABI = [
   },
 ];
 
-/* export const LOAN_FACTORY_SECOND = [
+export const LENS_PERIPHERY_ABI = [
   {
     inputs: [
       {
-        internalType: "int256",
-        name: "_borrowAmount",
-        type: "int256",
-      },
-      {
-        internalType: "int8",
-        name: "_interestRate",
-        type: "int8",
-      },
-      {
-        internalType: "int8",
-        name: "_paybackMonths",
-        type: "int8",
-      },
-      {
-        internalType: "address",
-        name: "_employer",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_lender",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_borrower",
-        type: "address",
-      },
-      {
-        internalType: "contract ISuperToken",
-        name: "_borrowToken",
-        type: "address",
-      },
-      {
-        internalType: "contract ISuperfluid",
-        name: "_host",
+        internalType: "contract ILensHub",
+        name: "hub",
         type: "address",
       },
     ],
-    name: "createNewLoan",
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [],
+    name: "ArrayMismatch",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "FollowInvalid",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotProfileOwnerOrDispatcher",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "SignatureExpired",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "SignatureInvalid",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "TokenDoesNotExist",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "HUB",
     outputs: [
       {
-        internalType: "uint8",
+        internalType: "contract ILensHub",
         name: "",
-        type: "uint8",
+        type: "address",
       },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "NAME",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "profileId",
+        type: "uint256",
+      },
+    ],
+    name: "getProfileMetadataURI",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "profileId",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "metadata",
+        type: "string",
+      },
+    ],
+    name: "setProfileMetadataURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "profileId",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "metadata",
+            type: "string",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+              {
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct DataTypes.EIP712Signature",
+            name: "sig",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct DataTypes.SetProfileMetadataWithSigData",
+        name: "vars",
+        type: "tuple",
+      },
+    ],
+    name: "setProfileMetadataURIWithSig",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -2718,7 +2820,7 @@ export const LOAN_FACTORY_ABI = [
         type: "address",
       },
     ],
-    name: "employmentLoanOwners",
+    name: "sigNonces",
     outputs: [
       {
         internalType: "uint256",
@@ -2732,74 +2834,79 @@ export const LOAN_FACTORY_ABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "_id",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "profileIds",
+        type: "uint256[]",
       },
-    ],
-    name: "getLoanAddressByID",
-    outputs: [
       {
-        internalType: "contract EmploymentLoan",
-        name: "",
-        type: "address",
+        internalType: "bool[]",
+        name: "enables",
+        type: "bool[]",
       },
     ],
-    stateMutability: "view",
+    name: "toggleFollow",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_owner",
-        type: "address",
+        components: [
+          {
+            internalType: "address",
+            name: "follower",
+            type: "address",
+          },
+          {
+            internalType: "uint256[]",
+            name: "profileIds",
+            type: "uint256[]",
+          },
+          {
+            internalType: "bool[]",
+            name: "enables",
+            type: "bool[]",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+              {
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct DataTypes.EIP712Signature",
+            name: "sig",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct DataTypes.ToggleFollowWithSigData",
+        name: "vars",
+        type: "tuple",
       },
     ],
-    name: "getLoanByOwner",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
+    name: "toggleFollowWithSig",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "idToLoan",
-    outputs: [
-      {
-        internalType: "contract EmploymentLoan",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "loanId",
-    outputs: [
-      {
-        internalType: "uint8",
-        name: "",
-        type: "uint8",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-]; */
+];
 
 export const LOAN_ABI = [
   {

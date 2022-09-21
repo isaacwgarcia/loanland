@@ -55,7 +55,7 @@ export default function LoanCardToApprove({
           <Button
             sx={{ color: "red" }}
             onClick={() => {
-              approveLoan(address);
+              approveLoan(address); //TODO APPROVE AND LEND CONFIRMATION PAGE
             }}
           >
             Approve

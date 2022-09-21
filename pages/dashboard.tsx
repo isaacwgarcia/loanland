@@ -1,6 +1,6 @@
 import React from "react";
 import LoanCard from "../components/LoanCard";
-import Box from "@mui/material/Box";
+import { Box } from "@mui/material";
 import { AppContext } from "../components/state/context";
 import { useRouter } from "next/router";
 
@@ -13,16 +13,20 @@ function Dashboard(props) {
 
   if (array.length == 0)
     return (
-      <Box height="100vh">
+      <Box height="80vh">
         <Box
           display="flex"
-          flexDirection="row"
           width="100%"
-          justifyContent="space-around"
+          justifyContent="center"
           rowGap="10px"
           flexWrap="wrap"
+          marginTop="10vh"
+          flexDirection="column"
+          alignItems="center"
         >
-          No Offers Available
+          <b>Dasboard - No Offers Available</b>
+          <br />
+          Check back soon...
         </Box>{" "}
       </Box>
     );

@@ -39,7 +39,7 @@ export default function Layout({ children }) {
               width: "50%",
             }}
             onClick={() => {
-              //router.push("/create-profile"); //TODO
+              router.push("/create-profile");
             }}
           >
             <b>
@@ -55,7 +55,7 @@ export default function Layout({ children }) {
               width: "50%",
             }}
             onClick={() => {
-              router.push("/profiles/123"); //TODO GRAB PROFILEID FROM STATE
+              router.push("/my-profile");
             }}
           >
             <b>

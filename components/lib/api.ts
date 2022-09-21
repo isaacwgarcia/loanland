@@ -1,12 +1,21 @@
 import { Session, Profile } from "./types";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { LENS_PERIPHERY_ABI, LENS_HUB_CONTRACT_ABI } from "./config";
+import { omit } from "./helpers";
 import Web3Modal from "web3modal";
-import { ethers } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
+import { pollUntilIndexed } from "./indexer";
+import { uploadIpfs } from "./ipfs";
+import { ProfileMetadata } from "./profile-metadata";
+import { v4 as uuidv4 } from "uuid";
 
 const apolloClient = new ApolloClient({
   uri: process.env.APIURL,
   cache: new InMemoryCache(),
 });
+const splitSignature = (signature: string) => {
+  return utils.splitSignature(signature);
+};
 
 export async function loginAPI(): Promise<Session | boolean> {
   try {
@@ -376,4 +385,367 @@ export async function getDetails(id) {
 
 export async function getProfileDetails(profileId) {
   return profileId;
+}
+
+export async function createProfile(jwt, formState, address) {
+  console.log("Inside Create Profile with ", jwt, formState);
+
+  const CREATE_PROFILE = `
+  mutation($request: CreateProfileRequest!) { 
+  
+    createProfile(request: $request) {
+      ... on RelayerResult {
+        txHash
+      }
+      ... on RelayError {
+        reason  
+      }
+			__typename
+    }
+ }
+`;
+  const client = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: jwt ? `Bearer ${jwt}` : "",
+    },
+  });
+  const result = await client.mutate({
+    mutation: gql(CREATE_PROFILE),
+    variables: {
+      request: {
+        handle: formState.username,
+        profilePictureUri: "uriProfile",
+        followNFTURI: "uriNFT",
+        /*   followModule: {
+          emptyFollowModule: true,
+        }, */
+      },
+    },
+  });
+
+  const resultPool = await pollUntilIndexed(
+    client,
+    result.data.createProfile.txHash,
+    jwt
+  );
+
+  //console.log("create profile: profile has been indexed", result);
+
+  const logs = resultPool.txReceipt.logs;
+
+  const topicId = utils.id(
+    "ProfileCreated(uint256,address,address,string,string,address,bytes,string,uint256)"
+  );
+
+  const profileCreatedLog = logs.find((l: any) => l.topics[0] === topicId);
+
+  let profileCreatedEventLog = profileCreatedLog.topics;
+
+  const profileId = utils.defaultAbiCoder.decode(
+    ["uint256"],
+    profileCreatedEventLog[1]
+  )[0];
+
+  const profileID = BigNumber.from(profileId).toHexString();
+
+  //const updateResult = await updateProfile(jwt, profileID, formState, "");
+
+  const updateResult = await createSetProfileMetadataTypedData(
+    jwt,
+    profileID,
+    formState,
+    address,
+    client
+  );
+  if (updateResult.transactionHash) return true;
+  return false;
+}
+
+export async function createSetProfileMetadataTypedData(
+  jwt,
+  userId,
+  formState,
+  address,
+  client
+) {
+  const CREATE_SET_PROFILE_METADATA_TYPED_DATA = `
+  mutation($request: CreatePublicSetProfileMetadataURIRequest!) { 
+    createSetProfileMetadataTypedData(request: $request) {
+      id
+      expiresAt
+      typedData {
+        types {
+          SetProfileMetadataURIWithSig {
+            name
+            type
+          }
+        }
+        domain {
+          name
+          chainId
+          version
+          verifyingContract
+        }
+        value {
+          nonce
+          deadline
+          profileId
+          metadata
+        }
+      }
+    }
+  }
+`;
+  /* 
+  console.log(
+    " 888 createSetProfileMetadataTypedData 888 values + address",
+    jwt,
+    userId,
+    formState,
+    address
+  ); */
+  const ipfsResult = await uploadIpfs<ProfileMetadata>({
+    name: formState.nombre,
+    /*  social: [
+      {
+        traitType: "string",
+        value: formState.web,
+        key: "website",
+      },
+      {
+        traitType: "string",
+        value: formState.twitter_handle,
+        key: "twitter",
+      },
+    ], */
+    bio: formState.bio,
+    cover_picture:
+      "https://timebusinessnews.com/wp-content/uploads/cash-loans-for-no-credit-feat-800x445.jpg",
+    /*     location: formState.location, */
+    attributes: [
+      {
+        traitType: "string",
+        value: "LoanLand",
+        key: "appID",
+      },
+    ],
+    version: "1.0.0",
+    metadata_id: uuidv4(),
+  });
+  console.log("create profile: ipfs result", ipfsResult);
+
+  /*  const client = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: jwt ? `Bearer ${jwt}` : "",
+    },
+  }); */
+
+  const createSetProfileMetadataTypedData = await client.mutate({
+    mutation: gql(CREATE_SET_PROFILE_METADATA_TYPED_DATA),
+    variables: {
+      request: {
+        profileId: userId,
+        metadata: "ipfs://" + ipfsResult.path,
+      },
+    },
+  });
+
+  const typedData =
+    createSetProfileMetadataTypedData.data.createSetProfileMetadataTypedData
+      .typedData;
+
+  const domain = omit(typedData.domain, "__typename");
+  const types = omit(typedData.types, "__typename");
+  const value = omit(typedData.value, "__typename");
+
+  const signer = await getWeb3Signer();
+
+  const signature = await signer._signTypedData(domain, types, value);
+
+  console.log("create profile: signature", signature);
+
+  const { v, r, s } = splitSignature(signature);
+
+  const lensPeriphery = new ethers.Contract(
+    process.env.LENS_PERIPHERY_CONTRACT,
+    LENS_PERIPHERY_ABI,
+    signer
+  );
+
+  console.log(
+    "before setProfileMetadataURIWithSig ",
+    address,
+    userId,
+    ipfsResult.path,
+    typedData.value.deadline
+  );
+  const tx = await lensPeriphery.setProfileMetadataURIWithSig({
+    user: address,
+    profileId: userId,
+    metadata: "ipfs://" + ipfsResult.path,
+    sig: {
+      v,
+      r,
+      s,
+      deadline: typedData.value.deadline,
+    },
+  });
+  console.log("create profile metadata: tx hash", tx.hash);
+
+  console.log("create profile metadata: poll until indexed");
+
+  const resultPool = await pollUntilIndexed(client, tx.hash, jwt);
+
+  console.log("create profile metadata: profile has been indexed", resultPool);
+
+  const logs = resultPool.txReceipt.logs;
+
+  console.log("create profile metadata: logs", logs);
+
+  console.log("Returning metadata: txReceipt ", resultPool.txReceipt);
+
+  return resultPool.txReceipt;
+}
+
+export async function updateProfileImage(jwt, userId, profileImageUrl) {
+  const CREATE_SET_PROFILE_IMAGE_URI_TYPED_DATA = `
+  mutation($request: UpdateProfileImageRequest!) { 
+    createSetProfileImageURITypedData(request: $request) {
+      id
+      expiresAt
+      typedData {
+        domain {
+          name
+          chainId
+          version
+          verifyingContract
+        }
+        types {
+          SetProfileImageURIWithSig {
+            name
+            type
+          }
+        }
+        value {
+          nonce
+        	deadline
+        	imageURI
+        	profileId
+        }
+      }
+    }
+ }
+`;
+  const client = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: jwt ? `Bearer ${jwt}` : "",
+    },
+  });
+
+  const setProfileImageUpdateTypedData = (setProfileImageTypedData: any) => {
+    return client.mutate({
+      mutation: gql(CREATE_SET_PROFILE_IMAGE_URI_TYPED_DATA),
+      variables: {
+        request: setProfileImageTypedData,
+      },
+    });
+  };
+
+  const setProfileImageUriRequest = {
+    profileId: userId,
+    url: profileImageUrl,
+  };
+
+  const result = await setProfileImageUpdateTypedData(
+    setProfileImageUriRequest
+  );
+
+  const typedData = result.data.createSetProfileImageURITypedData.typedData;
+
+  const domain = omit(typedData.domain, "__typename");
+  const types = omit(typedData.types, "__typename");
+  const value = omit(typedData.value, "__typename");
+
+  const signer = await getWeb3Signer();
+
+  const signature = await signer._signTypedData(domain, types, value);
+
+  const { v, r, s } = splitSignature(signature);
+
+  const lensHub = new ethers.Contract(
+    process.env.LENS_HUB_CONTRACT,
+    LENS_HUB_CONTRACT_ABI,
+    signer
+  );
+
+  const tx = await lensHub.setProfileImageURIWithSig({
+    profileId: typedData.value.profileId,
+    imageURI: typedData.value.imageURI,
+    sig: {
+      v,
+      r,
+      s,
+      deadline: typedData.value.deadline,
+    },
+  });
+
+  const resultPool = await pollUntilIndexed(client, tx.hash, jwt);
+  const logs = resultPool.txReceipt.logs;
+
+  console.log("Image Profile Set: logs", logs);
+  return tx.hash;
+}
+
+export async function refreshUser(address) {
+  const user: Profile = {
+    bio: "",
+    ownedBy: "",
+    handle: "",
+    id: "",
+    name: "",
+    picture: {
+      __typename: "",
+      original: { __typename: "", mimeType: {} as JSON, url: "" },
+    },
+    coverPicture: {
+      __typename: "",
+      original: { __typename: "", mimeType: {} as JSON, url: "" },
+    },
+
+    __typename: "",
+
+    dispatcher: {} as JSON,
+    followModule: {} as JSON,
+
+    stats: {
+      __typename: "",
+      totalCollects: 0,
+      totalComments: 0,
+      totalFollowers: 0,
+      totalFollowing: 0,
+      totalMirrors: 0,
+      totalPosts: 0,
+      totalPublications: 0,
+    },
+  };
+  const profile = await getProfile(address);
+  if (profile.data.profiles.items.length > 0) {
+    user.bio = profile.data.profiles.items[0].bio;
+    user.handle = profile.data.profiles.items[0].handle;
+    user.id = profile.data.profiles.items[0].id;
+
+    user.name = profile.data.profiles.items[0].name;
+
+    if (profile.data.profiles.items[0].picture) {
+      user.picture.original.url =
+        profile.data.profiles.items[0].picture.original.url;
+    }
+    return user;
+  }
 }

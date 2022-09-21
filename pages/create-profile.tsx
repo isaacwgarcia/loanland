@@ -1,14 +1,13 @@
 import React from "react";
-import { Box, Button, TextField } from "@mui/material";
-import { createLoan } from "../components/lib/loan";
-import { AppContext } from "../components/state/context";
-import { useContext } from "react";
-import { FormData } from "../components/lib/types";
+import { Box } from "@mui/material";
+import ProfileForm from "../components/ProfileForm";
 
 function CreateProfile() {
-  const context = useContext(AppContext);
-
-  return <Box height="100vh">Create Profile.</Box>;
+  return (
+    <Box height="100vh">
+      <ProfileForm />
+    </Box>
+  );
 }
 CreateProfile.layout = true;
 

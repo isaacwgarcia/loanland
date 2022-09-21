@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { getLoansbyLender } from "../components/lib/loan";
 import { AppContext } from "../components/state/context";
 import { useContext } from "react";
 import { FormData } from "../components/lib/types";
 import LoanCardToApprove from "../components/LoanCardToApprove";
+import { useRouter } from "next/router";
 
 function ApproveLoan() {
+  const router = useRouter();
   const context = useContext(AppContext);
   const data: FormData = { form_data: {} };
   const [loans, setLoans] = useState([]);
@@ -21,21 +23,23 @@ function ApproveLoan() {
     getLoans().catch(console.error);
   }, [loaded]);
 
-  //let array: [] = props.loans;
-
   if (loans.length == 0)
     return (
-      <Box height="100vh">
-        <Box
-          display="flex"
-          flexDirection="row"
-          width="100%"
-          justifyContent="space-around"
-          rowGap="10px"
-          flexWrap="wrap"
+      <Box
+        height="80vh"
+        marginTop="10vh"
+        display="flex"
+        alignItems="center"
+        flexDirection="column"
+      >
+        No Loans to approve.
+        <Button
+          onClick={() => {
+            router.push("/dashboard");
+          }}
         >
-          No Loans to approve.
-        </Box>{" "}
+          Go Back
+        </Button>
       </Box>
     );
 
@@ -56,6 +60,13 @@ function ApproveLoan() {
           />
         );
       })}
+      <Button
+        onClick={() => {
+          router.push("/dashboard");
+        }}
+      >
+        Go Back
+      </Button>
     </Box>
   );
 }

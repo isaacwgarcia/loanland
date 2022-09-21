@@ -10,11 +10,27 @@ function History() {
   const context = useContext(AppContext);
   const data: FormData = { form_data: {} };
   const [loans, setLoans] = useState([]);
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(false); //TODO GET LOANS HISTORY OF THE BORROWER
 
   useEffect(() => {}, [loaded]);
 
-  return <Box height="100vh"></Box>;
+  return (
+    <Box
+      height="80vh"
+      marginTop="10vh"
+      display="flex"
+      alignItems="center"
+      flexDirection="column"
+    >
+      <br /> <br /> <br />
+      <b> Open Loans</b>
+      <br /> <br /> <br />
+      <b> Loans Completed </b>
+      <br /> <br /> <br />
+      <b> Loans Unpaid</b>
+      <br /> <br /> <br />
+    </Box>
+  );
 }
 
 History.layout = true;

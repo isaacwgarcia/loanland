@@ -4,8 +4,10 @@ import { createLoan } from "../components/lib/loan";
 import { AppContext } from "../components/state/context";
 import { useContext } from "react";
 import { FormData } from "../components/lib/types";
+import { useRouter } from "next/router";
 
 function CreateLoan() {
+  const router = useRouter();
   const context = useContext(AppContext);
   const data: FormData = { form_data: {} };
   const [formState, setFormState] = React.useState(data.form_data);
@@ -14,9 +16,18 @@ function CreateLoan() {
 
   async function handleLoan(accessToken, userId, formState) {
     const response = await createLoan(accessToken, userId, formState);
+    //TODO CONFIRMATION AFTER CREATE LOAN
   }
   return (
-    <Box height="100vh">
+    <Box
+      height="80vh"
+      marginTop="10vh"
+      display="flex"
+      alignItems="center"
+      flexDirection="column"
+    >
+      <b>Describe your Loan Terms </b> <br />
+      <br />
       <Box my={2}>
         <TextField
           label="Max. Amount"
@@ -50,13 +61,23 @@ function CreateLoan() {
           }
         />
       </Box>
-      <Button
-        onClick={() => {
-          handleLoan(accessToken, userId, formState);
-        }}
-      >
-        Create Loan
-      </Button>
+      <br />
+      <Box display="flex">
+        <Button
+          onClick={() => {
+            router.push("/dashboard");
+          }}
+        >
+          Go Back
+        </Button>
+        <Button
+          onClick={() => {
+            handleLoan(accessToken, userId, formState);
+          }}
+        >
+          Create Loan
+        </Button>
+      </Box>
     </Box>
   );
 }
