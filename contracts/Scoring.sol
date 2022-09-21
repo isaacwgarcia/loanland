@@ -24,14 +24,14 @@ contract Scoring {
         _;
     } */
 
-    function openLoan (address borrower)   public returns (uint256){
+    function openLoan (address borrower) external returns (uint256){
 
         Score storage score = reputation[borrower];
         score.totalLoans  = score.totalLoans + 1;
         return  (score.totalLoans);
 
     }
-    function payLoan (address borrower)   public returns (uint256){
+    function payLoan (address borrower) external returns (uint256){
 
         Score storage score = reputation[borrower];
         score.totalPaid  = score.totalPaid + 1;
@@ -39,7 +39,7 @@ contract Scoring {
 
     }
 
-    function closeUnpaid (address borrower)   public returns (uint256){
+    function closeUnpaid (address borrower) external returns (uint256){
 
         Score storage score = reputation[borrower];
         score.closedUnpaid  = score.closedUnpaid + 1;

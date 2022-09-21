@@ -330,7 +330,10 @@ export async function approveLoan(loanAddress) {
         .lend()
         .then((tx) => {
           console.log(tx.hash);
+
+          //TODO CALL HIDE PUBLICATION
         })
+
         .catch((e) => {
           console.log("error lend", e);
         });

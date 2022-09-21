@@ -9,6 +9,24 @@ import { getLoans } from "../components/lib/api";
 function Dashboard(props) {
   const router = useRouter();
   const context = useContext(AppContext);
+  let array: [] = props.loans;
+
+  if (array.length == 0)
+    return (
+      <Box height="100vh">
+        <Box
+          display="flex"
+          flexDirection="row"
+          width="100%"
+          justifyContent="space-around"
+          rowGap="10px"
+          flexWrap="wrap"
+        >
+          No Offers Available
+        </Box>{" "}
+      </Box>
+    );
+
   return (
     <Box height="100vh">
       <Box
