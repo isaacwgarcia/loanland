@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 
 import { useContext } from "react";
 import { getLoans } from "../components/lib/api";
+import AmountSlider from "../components/AmountSlider";
+import LoanTerm from "../components/LoanTerm";
 function Dashboard(props) {
   const router = useRouter();
   const context = useContext(AppContext);
@@ -16,6 +18,17 @@ function Dashboard(props) {
   if (array.length == 0)
     return (
       <Box height="80vh">
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <AmountSlider />
+          &nbsp; &nbsp; &nbsp;
+          <LoanTerm />
+        </Box>
         <Box
           display="flex"
           width="100%"
@@ -35,12 +48,25 @@ function Dashboard(props) {
 
   return (
     <Box height="100vh">
+      <br />
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
+        <AmountSlider />
+        &nbsp; &nbsp; &nbsp;
+        <LoanTerm />
+      </Box>
       <Box
         display="flex"
         flexDirection="row"
         width="100%"
         justifyContent="space-around"
         rowGap="10px"
+        marginTop="10vh"
         flexWrap="wrap"
       >
         {props.loans?.map((loan, index) => {
