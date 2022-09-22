@@ -148,6 +148,7 @@ export default function Layout({ children }) {
           <Box display="flex" flexDirection="column">
             <b>Powered by</b>
             <Image
+              alt="superfluid logo"
               src="/superfluid.png"
               width="120"
               height="50"

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Box, Button } from "@mui/material";
 import styles from "../styles/Home.module.css";
-import { loginAPI, getProfileAPI } from "../components/lib/api";
+import { loginAPI, getProfileAPI, verifyOnChain } from "../components/lib/api";
 import { Session, Profile } from "../components/lib/types";
 import { useContext } from "react";
 import { AppContext } from "../components/state/context";
@@ -11,6 +11,7 @@ import { WidgetProps } from "@worldcoin/id";
 import dynamic from "next/dynamic";
 
 function Home() {
+  const actionId = process.env.WORLDID_ONCHAIN;
   const WorldIDWidget = dynamic<WidgetProps>(
     () => import("@worldcoin/id").then((mod) => mod.WorldIDWidget),
     { ssr: false }
@@ -22,7 +23,6 @@ function Home() {
   const router = useRouter();
   const { dispatch } = useContext(AppContext);
   const context = useContext(AppContext);
-  const actionId = process.env.ACTION_ID; //TODO
 
   async function handleLogin() {
     const session = (await loginAPI()) as Session;
@@ -37,12 +37,16 @@ function Home() {
   }
 
   async function verification(verificationResponse) {
-    const options = {
+    return await verifyOnChain(verificationResponse);
+    /*   console.log("Value", value);
+    if (value) return true;
+    else return false; */
+    /* const options = {      Verification OnCloud 
       method: `POST`,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(verificationResponse),
     };
-    const verification = await fetch(`api/ppp/verify`, options)
+    const verification = await fetch(`api/ppp/verify`, options)  
       .then((response) => {
         if (response.status == 200) {
           return response.json();
@@ -52,7 +56,8 @@ function Home() {
       .catch((error) => {
         console.error("Error fetching data: ", error);
       });
-    return verification.success;
+      return verification.success;
+ */
   }
   return (
     <>
@@ -89,7 +94,7 @@ function Home() {
             Login
           </Button>
           <WorldIDWidget
-            actionId="wid_staging_8d03e4abe36eb721fdb8eaea4f8589b5"
+            actionId={actionId}
             signal="loginUser"
             enableTelemetry
             onSuccess={(verificationResponse) => {

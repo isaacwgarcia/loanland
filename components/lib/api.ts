@@ -1,6 +1,10 @@
 import { Session, Profile } from "./types";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { LENS_PERIPHERY_ABI, LENS_HUB_CONTRACT_ABI } from "./config";
+import {
+  LENS_PERIPHERY_ABI,
+  LENS_HUB_CONTRACT_ABI,
+  WORLD_ID_ABI,
+} from "./config";
 import { omit } from "./helpers";
 import Web3Modal from "web3modal";
 import { BigNumber, ethers, utils } from "ethers";
@@ -826,4 +830,29 @@ export async function burnProfile(jwt, userId) {
   });
 
   console.log("Profile deleted.");
+}
+
+export async function verifyOnChain(verificationResponse) {
+  const proof = verificationResponse.proof;
+  const nullifier_hash = verificationResponse.nullifier_hash;
+  const merkle_root = verificationResponse.merkle_root;
+  const abiCoder = ethers.utils.defaultAbiCoder;
+  const unpackedProof = abiCoder.decode(["uint256[8]"], proof)[0];
+  const worldIdAddress = process.env.WORLDID_DEPLOYED;
+  const signer = await getWeb3Signer();
+  const worldId = new ethers.Contract(worldIdAddress, WORLD_ID_ABI, signer);
+  const result = await worldId
+    .connect(signer)
+    .verifyAndExecute("loginUser", merkle_root, nullifier_hash, unpackedProof)
+    .then((tx) => {
+      console.log(tx);
+      console.log(tx.hash);
+      return tx.hash;
+    })
+    .catch((e) => {
+      console.log(e);
+      return false;
+    });
+
+  return result;
 }
