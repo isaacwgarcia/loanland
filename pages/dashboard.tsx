@@ -65,9 +65,10 @@ function Dashboard(props) {
         flexDirection="row"
         width="100%"
         justifyContent="space-around"
-        rowGap="10px"
+        rowGap="15px"
         marginTop="10vh"
         flexWrap="wrap"
+        sx={{ height: "80vh" }}
       >
         {props.loans?.map((loan, index) => {
           let content = JSON.parse(loan.metadata.content);

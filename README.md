@@ -31,3 +31,5 @@ Users are able to:
 - Lenders can create a Loan
 - Borrowers can pre-apply for this loan
 - Lenders can check the credit score of the borrowers before approving.
+
+Credits of the Landing Page video to: https://www.loan-land.com/

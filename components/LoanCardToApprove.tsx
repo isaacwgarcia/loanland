@@ -25,7 +25,7 @@ export default function LoanCardToApprove({
       sx={{
         width: 300,
         padding: "15px",
-        borderBottomRightRadius: "80px 80px",
+        borderRadius: "30px",
       }}
       elevation={7}
     >
@@ -47,8 +47,8 @@ export default function LoanCardToApprove({
           Reputation&nbsp;<b>{reputation}</b>
           <StarIcon />
           <br />
-          Amount: <b>{amount} DAI</b>
-          <br /> Term: <b>{days} months</b>
+          Amount <b>{amount} DAI</b>
+          <br /> Term <b>{days} months</b>
           <br />
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

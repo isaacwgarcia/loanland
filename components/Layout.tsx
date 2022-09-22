@@ -44,7 +44,7 @@ export default function Layout({ children }) {
           >
             <b>
               <NoteAddIcon />
-              Create Profile
+              &nbsp; Create Profile
             </b>
           </Button>
           <Button
@@ -60,7 +60,7 @@ export default function Layout({ children }) {
           >
             <b>
               <AccountBoxIcon />
-              My Profile
+              &nbsp; My Profile
             </b>
           </Button>
           <Button
@@ -124,7 +124,7 @@ export default function Layout({ children }) {
           >
             <b>
               <ManageHistoryIcon />
-              Your History
+              &nbsp;Your History
             </b>
           </Button>
         </Grid>

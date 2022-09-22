@@ -28,7 +28,7 @@ function LoanPage(props) {
     >
       Apply for a Loan - You can not exceed these conditions.
       <br /> <br />
-      Amount: {content.amount}&nbsp; InterestRate: {content.interest_rate}
+      Amount {content.amount}&nbsp; InterestRate: {content.interest_rate}
       %&nbsp; LoanTerm: {content.loan_term}.
       <Box my={2}>
         <TextField

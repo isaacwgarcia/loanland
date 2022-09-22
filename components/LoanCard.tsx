@@ -19,32 +19,31 @@ export default function LoanCard({
     <Card
       sx={{
         width: 300,
-        padding: "15px",
-        borderBottomRightRadius: "80px 80px",
+        padding: "20px",
+        borderRadius: "30px",
       }}
-      elevation={7}
+      elevation={11}
     >
       <Typography
         gutterBottom
-        variant="h6"
         sx={{ display: "flex", justifyContent: "flex-end" }}
       >
         Interest Rate&nbsp;<b>{interest}%</b>
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         {" "}
-        <Avatar alt="User" src={picture} sx={{ width: 150, height: 150 }} />
+        <Avatar alt="User" src={picture} sx={{ width: 250, height: 50 }} />
       </Box>
       <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
+        <Typography gutterBottom component="div">
           @{handle}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Reputation&nbsp;<b>{reputation}</b>
           <StarIcon />
           <br />
-          Amount: <b>{amount} DAI</b>
-          <br /> Term: <b>{days} months</b>
+          Amount <b>{amount} DAI</b>
+          <br /> Term <b>{days} months</b>
           <br />
         </Typography>
       </CardContent>
