@@ -5,8 +5,9 @@ import { AppContext } from "../components/state/context";
 import { useContext } from "react";
 import { FormData } from "../components/lib/types";
 import LoanCardToApprove from "../components/LoanCardToApprove";
-
+import { useRouter } from "next/router";
 function History() {
+  const router = useRouter();
   const context = useContext(AppContext);
   const data: FormData = { form_data: {} };
   const [loans, setLoans] = useState([]);
@@ -29,6 +30,13 @@ function History() {
       <br /> <br /> <br />
       <b> Loans Unpaid</b>
       <br /> <br /> <br />
+      <Button
+        onClick={() => {
+          router.push("/dashboard");
+        }}
+      >
+        Go Back
+      </Button>
     </Box>
   );
 }

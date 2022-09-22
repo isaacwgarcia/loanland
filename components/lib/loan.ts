@@ -332,6 +332,7 @@ export async function approveLoan(loanAddress) {
           console.log(tx.hash);
 
           //TODO CALL HIDE PUBLICATION
+          //removeOffer()
         })
 
         .catch((e) => {
@@ -367,4 +368,31 @@ export async function getBalance(address) {
     ethers.utils.formatEther(ethers.BigNumber.from(lenderBalance))
   );
   return balance;
+}
+
+export async function removeOffer(publicationId, accessToken) {
+  const REMOVE_PUBLICATION = `
+        mutation($request: HidePublicationRequest!) { 
+          authenticate(request: $request) {
+            accessToken
+            refreshToken
+          }
+      }
+      `;
+  const client = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: accessToken ? `Bearer ${accessToken}` : "",
+    },
+  });
+
+  await client.mutate({
+    mutation: gql(REMOVE_PUBLICATION),
+    variables: {
+      request: {
+        publicationId,
+      },
+    },
+  });
 }
