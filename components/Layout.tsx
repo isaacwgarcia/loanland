@@ -10,8 +10,13 @@ import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import Image from "next/image";
+import { useContext } from "react";
+import { AppContext } from "../components/state/context";
+
 export default function Layout({ children }) {
+  const context = useContext(AppContext);
   const router = useRouter();
+  const profileId = context.state.profile.id as string;
 
   return (
     <>
@@ -88,7 +93,7 @@ export default function Layout({ children }) {
               width: "50%",
             }}
             onClick={() => {
-              //router.push("/approve-loan");TODO ACTUAL LOANS POSTS FOR LENDERS
+              router.push("/loans/user/" + `${profileId}`);
             }}
           >
             <b>
