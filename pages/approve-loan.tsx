@@ -3,14 +3,12 @@ import { Box, Button } from "@mui/material";
 import { getLoansbyLender } from "../components/lib/loan";
 import { AppContext } from "../components/state/context";
 import { useContext } from "react";
-import { FormData } from "../components/lib/types";
 import LoanCardToApprove from "../components/LoanCardToApprove";
 import { useRouter } from "next/router";
 
 function ApproveLoan() {
   const router = useRouter();
   const context = useContext(AppContext);
-  const data: FormData = { form_data: {} };
   const [loans, setLoans] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -44,30 +42,45 @@ function ApproveLoan() {
     );
 
   return (
-    <Box height="100vh">
-      {loans?.map((loan, index) => {
-        return (
-          <LoanCardToApprove
-            key={index}
-            address={loan.loanaddress}
-            interest={loan.interest}
-            reputation="5.0"
-            amount={loan.amount}
-            days={loan.duration}
-            handle="texst"
-            collateral="Collateral Required."
-            picture={"picture"}
-          />
-        );
-      })}
-      <Button
-        onClick={() => {
-          router.push("/dashboard");
-        }}
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        width="100%"
+        justifyContent="center"
+        rowGap="15px"
+        marginTop="10vh"
+        flexWrap="wrap"
       >
-        Go Back
-      </Button>
-    </Box>
+        <b>Approve Loan</b>
+        <br />
+        {loans?.map((loan, index) => {
+          console.log("Loan ", loan);
+          return (
+            <LoanCardToApprove
+              key={index}
+              address={loan.loanaddress}
+              interest={loan.interest}
+              reputation="5.0"
+              amount={loan.amount}
+              days={loan.duration}
+              borrower={loan.borrower}
+              id={loan.id}
+            />
+          );
+        })}
+      </Box>{" "}
+      <Box display="flex" justifyContent="center" marginTop="15px">
+        {" "}
+        <Button
+          onClick={() => {
+            router.push("/dashboard");
+          }}
+        >
+          Go Back
+        </Button>
+      </Box>
+    </>
   );
 }
 

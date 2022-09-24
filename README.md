@@ -2,34 +2,47 @@
 
 ## Problem:
 
-At this time we can create money streams between employers - employees, lenders can lend money against this money stream, but so far there is no way to calculate a credit score for ongoing and completed transactions.
+1.4 billion people in the world do not have a bank account. This makes it difficult for them to take advantage of financial products such as loans. Without having a KYC policy it is almost impossible to determine the financial risk of the client. Still in 2022 people remain unbanked for specific reasons, most common reasons are:  
+Maintenance costs of bank accounts.  
+Population living in rural areas.
+Documentation requirements.
+In short, no bank account, no KYC, no loans.
 
 ## Solution:
 
-Create a lending platform that connects Lenders and Borrowers in the same space, leveraging their interactions and reputation in social media as a credit score.
+For years, the ideas about financial inclusion with blockchain was mostly theoretical. Nowadays, real-time payments are displacing cash and cards. With modern protocols we can offer a decentralized solution where companies and individuals can lend money and generate profits without using intermediaries and / or financial institutions. The main goal is to offer a platform and credit score system based on historical data of loans and use social profiles as a complement.
 
 ## Technologies:
 
-- Polygon
-  Project fully deployed and implemented on Polygon Mumbai.
+- Polygon Project fully deployed and implemented on Polygon Mumbai.
 
 - IPFS Solution fully implemented way to store data from loans, profiles and images, to be used frequently by a large, growing and diverse audience.
   https://github.com/isaacwgarcia/loanland/blob/main/components/lib/ipfs.ts
 
-- Lens Protocol to store data from social graphs.
-  It lets lenders and borrowers take ownership of their content wherever they go in the digital garden of the decentralized internet.
+- Lens Protocol gives us a social environment, where we can create a marketplace to portray supply and demand of loans.
 
-- Superfluid to manage streams, loans and scoring smart contracts from borrowers and lenders.
+- Superfluid a streaming protocol to send money every second as a salary. Loans can be created in the middle of these salaries, and stream money to the employee and lenders.
 
-- WorldCoin to verify actions from social app users.
+- WorldCoin Proof of personhood, making sure that borrowers are real, and they are not impersonating someone else. No traditional KYC.
 
-Users are able to:
+Features Implemented:
 
 - Connect their wallet
-- Create a Lens Protocol Profile
-- Update lens profile's pice
-- Lenders can create a Loan
-- Borrowers can pre-apply for this loan
-- Lenders can check the credit score of the borrowers before approving.
+- An individual / company can create a Profile on the Lens ecosystem.
+- Lenders can post Loan Offers to all users of Lens Protocol.
+- Borrower can apply for a loan.
+- Lenders can approve and lend the money based on these applications.
+- Credit score is based on basic metrics such as: Open Loans, Closed Loans, Unpaid Loans.
+
+Future Plans
+
+- Improve UI Experience
+- Closing of flow upon loan payment completion
+- Develop more complex credit scoring algorithms
+- Notifications between borrowers and lenders.
+
+Factory Loan Contract deployed to Mumbai Polygon:
+Scoring deployed to Mumbai Polygon:
+WorldCoin Smart Contract Verification deployed to Mumbai Polygon:
 
 Credits of the Landing Page video to: https://www.loan-land.com/

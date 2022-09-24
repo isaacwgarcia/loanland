@@ -1,17 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Button } from "@mui/material";
-import { AppContext } from "../components/state/context";
-import { useContext } from "react";
-import { FormData } from "../components/lib/types";
 import { useRouter } from "next/router";
+import ActiveLoans from "../components/ActiveLoans";
 
 function PayAdvance() {
-  const context = useContext(AppContext);
-  const data: FormData = { form_data: {} };
-  const [loans, setLoans] = useState([]); //TODO GET OPEN LOANS TO PAY
-  const [loaded, setLoaded] = useState(false);
   const router = useRouter();
-  useEffect(() => {}, [loaded]);
 
   return (
     <Box
@@ -21,7 +14,10 @@ function PayAdvance() {
       alignItems="center"
       flexDirection="column"
     >
-      Pay in advance.
+      <b> Pay in advance</b>
+      <br />
+      <ActiveLoans />
+      <br /> <br /> <br /> <br />
       <Button
         onClick={() => {
           router.push("/dashboard");

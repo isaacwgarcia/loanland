@@ -1,33 +1,28 @@
-import React from "react";
-import {
-  Card,
-  Button,
-  Typography,
-  Avatar,
-  Box,
-  CardContent,
-} from "@mui/material";
+import React, { useContext } from "react";
+import { Card, Button, Typography, Box, CardContent } from "@mui/material";
 
 import StarIcon from "@mui/icons-material/Star";
 import { approveLoan } from "../components/lib/loan";
+import { AppContext } from "./state/context";
+
 export default function LoanCardToApprove({
   address,
   interest,
-  handle,
+  borrower,
   reputation,
   amount,
   days,
-  collateral,
-  picture,
+  id,
 }) {
+  const context = useContext(AppContext);
   return (
     <Card
       sx={{
         width: 300,
-        padding: "15px",
+        padding: "20px",
         borderRadius: "30px",
       }}
-      elevation={7}
+      elevation={11}
     >
       <Typography
         gutterBottom
@@ -36,13 +31,10 @@ export default function LoanCardToApprove({
       >
         Interest Rate&nbsp;<b>{interest}%</b>
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Avatar alt="User" src={picture} sx={{ width: 150, height: 150 }} />
-      </Box>
+      <Box sx={{ display: "flex", justifyContent: "center" }}></Box>
       <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
-          @{handle}
-        </Typography>
+        {borrower ? borrower?.slice(0, 4) : ""}...
+        {borrower ? borrower.slice(30, borrower.length) : ""}
         <Typography variant="body2" color="text.secondary">
           Reputation&nbsp;<b>{reputation}</b>
           <StarIcon />
@@ -55,7 +47,7 @@ export default function LoanCardToApprove({
           <Button
             sx={{ color: "red" }}
             onClick={() => {
-              approveLoan(address); //TODO APPROVE AND LEND CONFIRMATION PAGE
+              approveLoan(id, address, context.state.session.token.accessToken); //TODO APPROVE AND LEND CONFIRMATION PAGE
             }}
           >
             Approve

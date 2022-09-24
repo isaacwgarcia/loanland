@@ -5,6 +5,7 @@ import { AppContext } from "../components/state/context";
 import { useContext } from "react";
 import { FormData } from "../components/lib/types";
 import LoanCardToApprove from "../components/LoanCardToApprove";
+import LoansApplications from "../components/LoansApplications";
 import { useRouter } from "next/router";
 function History() {
   const router = useRouter();
@@ -24,7 +25,8 @@ function History() {
       flexDirection="column"
     >
       <br /> <br /> <br />
-      <b> Open Loans</b>
+      <b> Pre-Applications</b>
+      <LoansApplications />
       <br /> <br /> <br />
       <b> Loans Completed </b>
       <br /> <br /> <br />

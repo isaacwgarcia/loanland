@@ -40,7 +40,8 @@ function LoanOffers(props) {
       flexDirection="column"
       alignItems="center"
     >
-      Loan Offers
+      <b> Loan Offers</b>
+      <br />
       <br />{" "}
       {loans?.map((loan, index) => {
         let content = JSON.parse(loan.metadata.content);

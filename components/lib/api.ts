@@ -856,3 +856,23 @@ export async function verifyOnChain(verificationResponse) {
 
   return result;
 }
+
+export async function preApplyVerification() {
+  const options = {
+    method: `GET`,
+    cors: "no-cors",
+  };
+  const challenge = await fetch(`/preApplyWID`, options)
+    .then((response) => {
+      console.log("RESPONSE FROM /preApplyWID", response);
+      if (response.status) {
+        return response.json().then((data) => {
+          return data;
+        });
+      }
+      throw new Error("Api is not available challenge");
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
+}

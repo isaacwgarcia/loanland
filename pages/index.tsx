@@ -83,16 +83,17 @@ function Home() {
           />
         </Box>
         <main className={styles.main}>
-          <h1 className={styles.title}>
-            Welcome to <a>LoanLand</a>
-          </h1>
+          <h1 className={styles.title}>ManuFI</h1>
           <Button
+            variant="contained"
+            color="secondary"
             onClick={() => {
               handleLogin();
             }}
           >
             Login
           </Button>
+          <br />
           <WorldIDWidget
             actionId={actionId}
             signal="loginUser"

@@ -6,9 +6,9 @@ import { AppContext } from "../../components/state/context";
 import React from "react";
 import { getDetails } from "../../components/lib/api";
 import { useRouter } from "next/router";
+
 function LoanPage(props) {
   const router = useRouter();
-  const context = useContext(AppContext);
   const data: FormData = { form_data: {} };
   const [formState, setFormState] = React.useState(data.form_data);
 
@@ -73,7 +73,9 @@ function LoanPage(props) {
           Go Back
         </Button>
         <Button
+          //href="/preApplyWID"
           onClick={() => {
+            //preApplyVerification(); //WorldCoin
             preApply(loan, formState);
           }}
         >

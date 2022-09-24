@@ -241,7 +241,7 @@ export async function getLoansbyLender(lender) {
 
   //SET AFTER INITIAL DEPLOY
   const loanFactoryAddress = process.env.LOANFACTORY_DEPLOYED_ADDRESS;
-
+  console.log("loanFactoryAddress", loanFactoryAddress);
   const loanFactory = new ethers.Contract(
     loanFactoryAddress,
     LOAN_FACTORY_ABI,
@@ -280,10 +280,127 @@ export async function getLoansbyLender(lender) {
       }
     } else break;
   }
+  console.log("LOANS", loans);
   return loans;
 }
 
-export async function approveLoan(loanAddress) {
+export async function getLoansbyBorrower(borrower) {
+  const customHttpProvider = new ethers.providers.JsonRpcProvider(
+    process.env.MUMBAI_URL
+  );
+
+  //SET AFTER INITIAL DEPLOY
+  const loanFactoryAddress = process.env.LOANFACTORY_DEPLOYED_ADDRESS;
+  const loanFactory = new ethers.Contract(
+    loanFactoryAddress,
+    LOAN_FACTORY_ABI,
+    customHttpProvider
+  );
+
+  let loans = [];
+  for (let i = 1; i < 10; i++) {
+    let contractAddress = await loanFactory.idToLoan(i);
+
+    if (contractAddress != "0x0000000000000000000000000000000000000000") {
+      const loan = new ethers.Contract(
+        contractAddress,
+        LOAN_ABI,
+        customHttpProvider
+      );
+      const _borrower = await loan.borrower();
+      if (borrower == _borrower) {
+        const _lender = await loan.lender();
+        const _amount = await loan.borrowAmount();
+        const _duration = await loan.paybackMonths();
+        const _interest = await loan.interestRate();
+        const _loanaddress = await loan.address;
+        const _loanopen = await loan.open;
+        const _amountRemaining = await loan.getTotalAmountRemaining();
+        const _loanStartTime = await loan.loanStartTime();
+
+        let conditions = {
+          lender: _lender,
+          amount: ethers.utils.formatEther(
+            ethers.BigNumber.from(_amount).toString()
+          ),
+          duration: ethers.BigNumber.from(_duration).toString(),
+          interest: _interest,
+          loanaddress: _loanaddress,
+          loanopen: _loanopen,
+          amountRemaining: ethers.utils.formatEther(
+            ethers.BigNumber.from(_amountRemaining).toString()
+          ),
+          loanStartTime: _loanStartTime,
+        };
+
+        loans.push(conditions);
+      }
+    } else break;
+  }
+  console.log("Borrower's loans: ", loans);
+  return loans;
+}
+
+export async function getActiveLoansbyBorrower(borrower) {
+  const customHttpProvider = new ethers.providers.JsonRpcProvider(
+    process.env.MUMBAI_URL
+  );
+
+  //SET AFTER INITIAL DEPLOY
+  const loanFactoryAddress = process.env.LOANFACTORY_DEPLOYED_ADDRESS;
+  const loanFactory = new ethers.Contract(
+    loanFactoryAddress,
+    LOAN_FACTORY_ABI,
+    customHttpProvider
+  );
+
+  let loans = [];
+  for (let i = 1; i < 10; i++) {
+    let contractAddress = await loanFactory.idToLoan(i);
+
+    if (contractAddress != "0x0000000000000000000000000000000000000000") {
+      const loan = new ethers.Contract(
+        contractAddress,
+        LOAN_ABI,
+        customHttpProvider
+      );
+      const _borrower = await loan.borrower();
+      if (borrower == _borrower) {
+        const _lender = await loan.lender();
+        const _amount = await loan.borrowAmount();
+        const _duration = await loan.paybackMonths();
+        const _interest = await loan.interestRate();
+        const _loanaddress = await loan.address;
+        const _loanopen = await loan.open;
+        const _amountRemaining = await loan.getTotalAmountRemaining();
+        const _loanStartTime = await loan.loanStartTime();
+
+        if (_loanopen) {
+          let conditions = {
+            lender: _lender,
+            amount: ethers.utils.formatEther(
+              ethers.BigNumber.from(_amount).toString()
+            ),
+            duration: ethers.BigNumber.from(_duration).toString(),
+            interest: _interest,
+            loanaddress: _loanaddress,
+            loanopen: _loanopen,
+            amountRemaining: ethers.utils.formatEther(
+              ethers.BigNumber.from(_amountRemaining).toString()
+            ),
+            loanStartTime: _loanStartTime,
+          };
+
+          loans.push(conditions);
+        }
+      }
+    } else break;
+  }
+  console.log("Active Borrower's loans: ", loans);
+  return loans;
+}
+
+export async function approveLoan(id, loanAddress, jwt) {
   const url = `${process.env.MUMBAI_URL}`;
   const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
   const network = await customHttpProvider.getNetwork();
@@ -331,8 +448,7 @@ export async function approveLoan(loanAddress) {
         .then((tx) => {
           console.log(tx.hash);
 
-          //TODO CALL HIDE PUBLICATION
-          //removeOffer()
+          removeOffer(id, jwt);
         })
 
         .catch((e) => {
@@ -371,6 +487,7 @@ export async function getBalance(address) {
 }
 
 export async function removeOffer(publicationId, accessToken) {
+  console.log("Inside Remove Publication");
   const REMOVE_PUBLICATION = `
         mutation($request: HidePublicationRequest!) { 
           hidePublication(request: $request)       

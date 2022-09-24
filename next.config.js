@@ -16,6 +16,19 @@ const nextConfig = {
     WORLDID_DEPLOYED: process.env.WORLDID_DEPLOYED,
     WORLDID_ONCHAIN: process.env.WORLDID_ONCHAIN,
   },
+
+  async redirects() {
+    return [
+      {
+        source: "/preApplyWID",
+        destination:
+          "https://developer.worldcoin.org/hosted/wid_staging_8d03e4abe36eb721fdb8eaea4f8589b5?signal=loginUser",
+
+        permanent: false,
+        basePath: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
