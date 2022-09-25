@@ -48,6 +48,7 @@ export async function loginAPI(): Promise<Session | boolean> {
         });
 
       const authenticate = await validateSignedMessage(address, challenge);
+      console.log("Challenge ", challenge);
       /* const signedMessage = await newSigner.signMessage(challenge);
 
       const authenticate = await fetch(
@@ -86,7 +87,7 @@ export async function validateSignedMessage(address, challenge) {
   const provider = new ethers.providers.Web3Provider(connection);
   const signer = provider.getSigner();
   const signedMessage = await signer.signMessage(challenge);
-
+  console.log("signedMessage ", signedMessage);
   const authenticate = await fetch(
     `/api/auth/${address}?signedMessage=${signedMessage}`,
     {
