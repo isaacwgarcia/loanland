@@ -41,8 +41,8 @@ Future Plans
 - Develop more complex credit scoring algorithms
 - Notifications between borrowers and lenders.
 
-Factory Loan Contract deployed to Mumbai Polygon:
-Scoring deployed to Mumbai Polygon:
-WorldCoin Smart Contract Verification deployed to Mumbai Polygon:
+Factory Loan Contract deployed to Mumbai Polygon: 0xD89907759ea56723FC20eb72F99884dFc592a020
+Scoring deployed to Mumbai Polygon: 0x9c089C7C7EC2A2e3A0B8a661169e7CE07Bb86fA6
+WorldCoin Smart Contract Verification deployed to Mumbai Polygon: 0xc5CDe643F6e53103115AC1462276333EB378a1CB
 
 Credits of the Landing Page video to: https://www.loan-land.com/

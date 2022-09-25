@@ -62,10 +62,10 @@ function Home() {
   return (
     <>
       <Head>
-        <title>LoanLand</title>
+        <title>ManuFI</title>
         <meta
           name="description"
-          content="LoanLand Powered by Superfluid and Lens."
+          content="ManuFI Powered by Superfluid and Lens."
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>

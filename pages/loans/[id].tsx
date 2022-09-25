@@ -3,15 +3,15 @@ import { FormData } from "../../components/lib/types";
 import { preApply } from "../../components/lib/loan";
 import { useContext } from "react";
 import { AppContext } from "../../components/state/context";
-import React from "react";
+import React, { useState } from "react";
 import { getDetails } from "../../components/lib/api";
 import { useRouter } from "next/router";
 
 function LoanPage(props) {
   const router = useRouter();
   const data: FormData = { form_data: {} };
-  const [formState, setFormState] = React.useState(data.form_data);
-
+  const [formState, setFormState] = useState(data.form_data);
+  const [confirmation, setConfirmation] = useState(false);
   let content = JSON.parse(props.loan.metadata.content);
   let loan = props.loan;
 

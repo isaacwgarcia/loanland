@@ -1,6 +1,5 @@
-import { Box, TextField, Button } from "@mui/material";
-import { FormData } from "../../../components/lib/types";
-import { preApply, getLoanOffers } from "../../../components/lib/loan";
+import { Box, Button } from "@mui/material";
+import { getLoanOffers } from "../../../components/lib/loan";
 import { useContext } from "react";
 import { AppContext } from "../../../components/state/context";
 import React, { useState, useEffect } from "react";
@@ -10,12 +9,9 @@ import OffersLoans from "../../../components/OffersLoans";
 function LoanOffers(props) {
   const router = useRouter();
   const context = useContext(AppContext);
-  const data: FormData = { form_data: {} };
-  const [formState, setFormState] = React.useState(data.form_data);
 
   const [loaded, setLoaded] = useState(false);
   const [loans, setLoans] = useState([]);
-  console.log("hi loan offers");
   useEffect(() => {
     const getLoans = async () => {
       const data = await getLoanOffers(

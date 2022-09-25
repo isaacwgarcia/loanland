@@ -56,6 +56,7 @@ export async function loginAPI(): Promise<Session | boolean> {
         }
       )
         .then((response) => {
+          console.log("API Authenticate Response>", response);
           if (response.ok) {
             return response.json().then((data) => {
               return data;
