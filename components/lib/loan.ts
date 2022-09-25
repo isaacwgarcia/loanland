@@ -216,7 +216,7 @@ export async function preApply(loan, formState) {
 
   const borrower_address = await borrower.getAddress();
 
-  await loanFactory
+  const tx = await loanFactory
     .connect(borrower)
     .createNewLoan(
       ethers.utils.parseEther(amount), //amount to Borrow
@@ -231,7 +231,10 @@ export async function preApply(loan, formState) {
     )
     .then((tx) => {
       console.log("Instance successfull tx hash >>> ", tx.hash);
+      return tx;
     });
+
+  return tx;
 }
 
 export async function getLoansbyLender(lender) {
@@ -308,6 +311,7 @@ export async function getLoansbyBorrower(borrower) {
         customHttpProvider
       );
       const _borrower = await loan.borrower();
+
       if (borrower == _borrower) {
         const _lender = await loan.lender();
         const _amount = await loan.borrowAmount();
@@ -375,7 +379,7 @@ export async function getActiveLoansbyBorrower(borrower) {
         const _amountRemaining = await loan.getTotalAmountRemaining();
         const _loanStartTime = await loan.loanStartTime();
 
-        if (_loanopen) {
+        if (_loanStartTime) {
           let conditions = {
             lender: _lender,
             amount: ethers.utils.formatEther(
@@ -385,9 +389,11 @@ export async function getActiveLoansbyBorrower(borrower) {
             interest: _interest,
             loanaddress: _loanaddress,
             loanopen: _loanopen,
-            amountRemaining: ethers.utils.formatEther(
-              ethers.BigNumber.from(_amountRemaining).toString()
-            ),
+            amountRemaining: Number(
+              ethers.utils.formatEther(
+                ethers.BigNumber.from(_amountRemaining).toString()
+              )
+            ).toFixed(2),
             loanStartTime: _loanStartTime,
           };
 
@@ -418,6 +424,7 @@ export async function approveLoan(id, loanAddress, jwt) {
   const amountDec = Number(
     ethers.utils.formatEther(ethers.BigNumber.from(borrowAmount).toString())
   );
+
   const lender_address = await lender.getAddress();
 
   const lenderBalance = await getBalance(lender_address);

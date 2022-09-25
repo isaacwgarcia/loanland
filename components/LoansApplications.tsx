@@ -24,13 +24,13 @@ const LoansApplications = () => {
         <>
           {loans?.map((loan, index) => {
             return (
-              <>
+              <div key={index}>
                 <br />
                 {loan.loanaddress}&nbsp;-&nbsp;{loan.amount}
                 &nbsp;DAI&nbsp;-&nbsp;
                 {loan.duration}&nbsp;months&nbsp;-&nbsp;
                 {loan.interest}%
-              </>
+              </div>
             );
           })}
         </>

@@ -45,4 +45,17 @@ Factory Loan Contract deployed to Mumbai Polygon: 0xD89907759ea56723FC20eb72F998
 Scoring deployed to Mumbai Polygon: 0x9c089C7C7EC2A2e3A0B8a661169e7CE07Bb86fA6
 WorldCoin Smart Contract Verification deployed to Mumbai Polygon: 0xc5CDe643F6e53103115AC1462276333EB378a1CB
 
+Successfull Lend: https://mumbai.polygonscan.com/address/0x610699e22fb12933cb0aa2db15b32597be28f99d
+
+npx hardhat run scripts/getScore.js
+0xa3c571A4C6f98c89AA608Ab199bb6D0C6d236096 Borrower's score: [
+BigNumber { _hex: '0x01', _isBigNumber: true },
+BigNumber { _hex: '0x00', _isBigNumber: true },
+BigNumber { _hex: '0x00', _isBigNumber: true },
+totalLoans: BigNumber { _hex: '0x01', _isBigNumber: true },
+totalPaid: BigNumber { _hex: '0x00', _isBigNumber: true },
+closedUnpaid: BigNumber { _hex: '0x00', _isBigNumber: true }
+]
+
+TestScripts under /components/scripts
 Credits of the Landing Page video to: https://www.loan-land.com/

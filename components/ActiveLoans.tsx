@@ -29,7 +29,7 @@ const ActiveLoans = () => {
             return (
               <>
                 <br />
-                {loan.loanaddress}&nbsp;-&nbsp;{loan.amount}
+                {loan.loanaddress}&nbsp;-&nbsp;{loan.amountRemaining}
                 &nbsp;DAI&nbsp;-&nbsp;
                 {loan.duration}&nbsp;months&nbsp;-&nbsp;
                 {loan.interest}%
