@@ -13,10 +13,6 @@ import { uploadIpfs } from "./ipfs";
 import { ProfileMetadata } from "./profile-metadata";
 import { v4 as uuidv4 } from "uuid";
 
-const apolloClient = new ApolloClient({
-  uri: process.env.APIURL,
-  cache: new InMemoryCache(),
-});
 const splitSignature = (signature: string) => {
   return utils.splitSignature(signature);
 };
@@ -24,6 +20,7 @@ const splitSignature = (signature: string) => {
 export async function loginAPI(): Promise<Session | boolean> {
   try {
     const web3Modal = new Web3Modal();
+    await web3Modal.clearCachedProvider();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const accounts = await provider.listAccounts();
@@ -83,11 +80,13 @@ export async function loginAPI(): Promise<Session | boolean> {
 
 export async function validateSignedMessage(address, challenge) {
   const web3Modal = new Web3Modal();
+
+  await web3Modal.clearCachedProvider();
+
   const connection = await web3Modal.connect();
   const provider = new ethers.providers.Web3Provider(connection);
   const signer = provider.getSigner();
   const signedMessage = await signer.signMessage(challenge);
-  console.log("signedMessage ", signedMessage);
   const authenticate = await fetch(
     `/api/auth/${address}?signedMessage=${signedMessage}`,
     {
@@ -114,6 +113,10 @@ export async function generateChallenge(address) {
       challenge(request: $request) { text }
     }
   `;
+  const apolloClient = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+  });
   const result = await apolloClient.query({
     query: gql(GET_CHALLENGE),
     variables: {
@@ -126,6 +129,10 @@ export async function generateChallenge(address) {
 }
 
 export async function authenticate(address, signature) {
+  const apolloClient = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+  });
   const AUTHENTICATION = `
         mutation($request: SignedAuthChallenge!) { 
           authenticate(request: $request) {
@@ -134,6 +141,7 @@ export async function authenticate(address, signature) {
           }
       }
       `;
+
   const accessTokens = await apolloClient.mutate({
     mutation: gql(AUTHENTICATION),
     variables: {
@@ -346,6 +354,10 @@ export async function getLoans() {
   }
   
   `;
+  const apolloClient = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+  });
   const result = await apolloClient.query({
     query: gql(GET_LOANS),
   });
@@ -411,6 +423,10 @@ export async function getDetails(id) {
     appId
   }
   `;
+  const apolloClient = new ApolloClient({
+    uri: process.env.APIURL,
+    cache: new InMemoryCache(),
+  });
   const result = await apolloClient.query({
     query: gql(GET_DETAILS),
   });
