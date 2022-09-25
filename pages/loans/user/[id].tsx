@@ -37,21 +37,28 @@ function LoanOffers(props) {
       alignItems="center"
     >
       <b> Loan Offers</b>
-      <br />
-      <br />{" "}
-      {loans?.map((loan, index) => {
-        let content = JSON.parse(loan.metadata.content);
-        return (
-          <OffersLoans
-            key={index}
-            interest={content.interest_rate}
-            amount={content.amount}
-            days={content.loan_term}
-            picture={loan.profile?.picture?.original?.url}
-            id={loan.id}
-          />
-        );
-      })}
+      <Box
+        display="flex"
+        width="100%"
+        justifyContent="space-around"
+        rowGap="10px"
+        flexWrap="wrap"
+        alignItems="center"
+      >
+        {loans?.map((loan, index) => {
+          let content = JSON.parse(loan.metadata.content);
+          return (
+            <OffersLoans
+              key={index}
+              interest={content.interest_rate}
+              amount={content.amount}
+              days={content.loan_term}
+              picture={loan.profile?.picture?.original?.url}
+              id={loan.id}
+            />
+          );
+        })}
+      </Box>
       <Button
         onClick={() => {
           router.push("/dashboard");
