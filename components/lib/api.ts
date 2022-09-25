@@ -47,7 +47,9 @@ export async function loginAPI(): Promise<Session | boolean> {
           console.error("Error fetching data: ", error);
         });
 
-      const signedMessage = await signer.signMessage(challenge);
+      const newSigner = provider.getSigner();
+
+      const signedMessage = await newSigner.signMessage(challenge);
 
       const authenticate = await fetch(
         `/api/auth/${address}?signedMessage=${signedMessage}`,
