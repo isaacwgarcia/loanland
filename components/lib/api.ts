@@ -47,9 +47,8 @@ export async function loginAPI(): Promise<Session | boolean> {
           console.error("Error fetching data: ", error);
         });
 
-      const newSigner = provider.getSigner();
-
-      const signedMessage = await newSigner.signMessage(challenge);
+      const authenticate = await validateSignedMessage(address, challenge);
+      /* const signedMessage = await newSigner.signMessage(challenge);
 
       const authenticate = await fetch(
         `/api/auth/${address}?signedMessage=${signedMessage}`,
@@ -68,7 +67,7 @@ export async function loginAPI(): Promise<Session | boolean> {
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);
-        });
+        }); */
 
       const session = authenticate as Session;
       return session;
@@ -81,6 +80,33 @@ export async function loginAPI(): Promise<Session | boolean> {
   }
 }
 
+export async function validateSignedMessage(address, challenge) {
+  const web3Modal = new Web3Modal();
+  const connection = await web3Modal.connect();
+  const provider = new ethers.providers.Web3Provider(connection);
+  const signer = provider.getSigner();
+  const signedMessage = await signer.signMessage(challenge);
+
+  const authenticate = await fetch(
+    `/api/auth/${address}?signedMessage=${signedMessage}`,
+    {
+      method: `POST`,
+    }
+  )
+    .then((response) => {
+      console.log("API Authenticate Response>", response);
+      if (response.ok) {
+        return response.json().then((data) => {
+          return data;
+        });
+      }
+      throw new Error("Api is not available authenticate");
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
+  return authenticate;
+}
 export async function generateChallenge(address) {
   const GET_CHALLENGE = `
     query($request: ChallengeRequest!) {
