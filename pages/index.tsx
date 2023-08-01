@@ -9,8 +9,10 @@ import { loadSession, loadProfile } from "../components/state/reducer";
 import { useRouter } from "next/router";
 import { WidgetProps } from "@worldcoin/id";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
 
-function Home() {
+const Home = () => {
   const actionId = process.env.WORLDID_ONCHAIN;
   const WorldIDWidget = dynamic<WidgetProps>(
     () => import("@worldcoin/id").then((mod) => mod.WorldIDWidget),
@@ -71,7 +73,6 @@ function Home() {
       </Head>
       <Box sx={{ height: "100vh", background: "black", color: "white" }}>
         <Box sx={{ position: "absolute", width: "100vw", height: "100vh" }}>
-          {" "}
           <ReactPlayer
             url="https://www.loan-land.com/wp-content/uploads/2021/06/video_v2.mp4"
             playing={true}
@@ -108,10 +109,32 @@ function Home() {
             }}
           />
         </main>
-        ;
+        <Box
+          style={{
+            display: "flex",
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "flex-end",
+            zIndex: 15,
+          }}
+        >
+          <Link href="https://ethglobal.com/showcase/manufi-yonr7">
+            <a href="https://ethglobal.com/showcase/manufi-yonr7">
+              <Image
+                alt="EthGlobal Hackaton 2022"
+                src="/ethglobal.svg"
+                width="250"
+                height="200"
+                layout="fixed"
+              />
+            </a>
+          </Link>
+        </Box>
       </Box>
     </>
   );
-}
+};
 
 export default Home;

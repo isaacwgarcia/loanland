@@ -35,7 +35,7 @@ contract Scoring {
 
         Score storage score = reputation[borrower];
         score.totalPaid  = score.totalPaid + 1;
-        return  (score.totalPaid);
+        return score.totalPaid;
 
     }
 
